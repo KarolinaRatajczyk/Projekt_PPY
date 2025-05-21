@@ -397,5 +397,16 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
-# JetBrains Rider
-*.sln.iml
+#JetBrains
+.idea/
+
+# OS X
+.DS_Store
+.AppleDouble
+.LSOverride
+
+
+# macOS specific files
+Icon?
+ehthumbs.db
+Thumbs.db
