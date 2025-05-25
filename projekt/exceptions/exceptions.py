@@ -18,5 +18,7 @@ class WrongFileLoading(Exception):
     "when wrong file loading"
     pass
 
-
+class UserError(Exception):
+    "when user error"
+    pass
 

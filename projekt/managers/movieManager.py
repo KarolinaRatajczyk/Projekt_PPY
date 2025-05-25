@@ -1,5 +1,5 @@
 from projekt.exceptions.exceptions import WrongStatus, NotSuchAnId, EmptyMovieListError
-from movie import Movie
+from projekt.models.movie import Movie
 
 
 class MovieManager:

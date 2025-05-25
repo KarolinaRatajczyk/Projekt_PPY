@@ -43,7 +43,7 @@ class User:
 
         @classmethod
         def from_dict(cls, data):
-            user = cls.__new__(cls)
+            user = cls.__new__(cls)     ### utworzenie nowej instancji klasy bez wywolywania __int__
             user.id = data["id"]
             user.username = data["username"]
             user.password_hash = data["password_hash"]
