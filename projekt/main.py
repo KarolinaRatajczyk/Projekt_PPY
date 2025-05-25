@@ -1,13 +1,21 @@
+import sys
 from PySide6.QtWidgets import QApplication
+
+from projekt.gui.gui import MainAppWindow
 from projekt.gui.gui_login import LoginWindow
-# from gui_main import MainWindow  # główne okno z listą filmów
+from projekt.managers.movieManager import MovieManager
+from projekt.managers.userManager import UserManager
 
-app = QApplication([])
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
 
-login = LoginWindow()
-if login.exec() == LoginWindow.Accepted:
-    username = login.username_input.text()
-    # window = MainWindow(username)
-    # window.show()
-    # app.exec()
-# dupa dupa
+    user_manager = UserManager("C:/Users/Mateusz/PycharmProjects/Projekt_PPY/projekt/data/users.json")
+    movie_manager = MovieManager()  # zakładam, że masz to
+
+    login_dialog = LoginWindow(user_manager)
+
+    if login_dialog.exec():
+        user = login_dialog.user
+        main_window = MainAppWindow(user, movie_manager)
+        main_window.show()
+        sys.exit(app.exec())  # <- aplikacja działa dopóki okno jest otwarte

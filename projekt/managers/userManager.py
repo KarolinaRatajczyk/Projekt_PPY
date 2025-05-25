@@ -1,13 +1,14 @@
 
 import json
 import os
+from datetime import datetime
 
 from projekt.exceptions.exceptions import UserError, WrongStatus
 from projekt.models.user import User
 
 
 class UserManager:
-    def __init__(self, data_file="data/users.json"):
+    def __init__(self, data_file="../data/users.json"):
         self.users = []
         self.current_user = None
         self.data_file = data_file
@@ -132,17 +133,23 @@ class UserManager:
         ## sprawdz czy zalogowany
         return self.current_user is not None
 
-
     def save_users(self):
-        ## jsonowe zapisywanie
         try:
+            user_data = []
+            for user in self.users:
+                data = user.to_dict()
+                # Zamień datetime na string jeśli istnieją
+                if isinstance(data.get("created_at"), datetime):
+                    data["created_at"] = data["created_at"].strftime("%Y-%m-%d %H:%M:%S")
+                if isinstance(data.get("last_login"), datetime):
+                    data["last_login"] = data["last_login"].strftime("%Y-%m-%d %H:%M:%S")
+                user_data.append(data)
 
-            user_data = [user.to_dict() for user in self.users]
             with open(self.data_file, 'w', encoding='utf-8') as f:
                 json.dump(user_data, f, ensure_ascii=False, indent=2)
 
         except Exception as e:
-            print(f"Nie udalo sie zapisac: ERROR")
+            print(f"Nie udalo sie zapisac: {e}")
 
     def load_users(self):
 

@@ -1,6 +1,8 @@
 import uuid
 from datetime import datetime
 
+from projekt.models.movie import Movie
+
 
 class User:
     def __init__(self, username, password, email=""):
@@ -15,9 +17,9 @@ class User:
 
         self.id = str(uuid.uuid4())
         self.username = username
-        self.password = self.password
+        self.password = password
         self.email = email
-        self.created_at = datetime.datetime.now()
+        self.created_at = datetime.now()
         self.last_login = self.created_at
         self.movies = []
 
@@ -37,17 +39,19 @@ class User:
             "username": self.username,
             "password": self.password,
             "email": self.email,
-            "created_at": self.created_at,
-            "last_login": self.last_login
-            }
+            "created_at": str(self.created_at),
+            "last_login": self.last_login,
+            "movies": [movie.to_dict() for movie in self.movies]
+        }
 
     @classmethod
     def from_dict(cls, data):
-        user = cls.__new__(cls)     ### utworzenie nowej instancji klasy bez wywolywania __int__
+        user = cls.__new__(cls)
         user.id = data["id"]
         user.username = data["username"]
-        user.password_hash = data["password_hash"]
+        user.password = data["password"]  # poprawka: `password_hash` nie istnieje
         user.email = data.get("email", "")
         user.created_at = data.get("created_at", "")
         user.last_login = data.get("last_login")
+        user.movies = [Movie.from_dict(m) for m in data.get("movies", [])]
         return user

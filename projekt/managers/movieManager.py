@@ -1,4 +1,4 @@
-from projekt.exceptions.exceptions import WrongStatus, NotSuchAnId, EmptyMovieListError
+from projekt.exceptions.exceptions import WrongStatus, NotSuchAnId, EmptyMovieListError, DuplicateMovieError
 from projekt.models.movie import Movie
 
 
@@ -9,16 +9,10 @@ class MovieManager:
         self.movies = []  # -> inicjalizujemy pusty array
 
     def add_movie(self, movie):
-
-        if not isinstance(movie, Movie):
-            raise NotSuchAnId(f"Obiekt {movie} musi byc instancja movie")
-
-        if existing_movie := self.find_movie_by_title(movie.title):
-            raise NotSuchAnId(f"Movie {movie.title} already exists")
-
+        for m in self.movies:
+            if m.title.lower() == movie.title.lower():
+                raise DuplicateMovieError(f"Film '{movie.title}' już istnieje!")
         self.movies.append(movie)
-        print(f"Film {movie.title} dodany")  ## na razie bez GUI bedziemy testowac na terminalu
-
 
     def get_movies(self):
         if not self.movies:
@@ -31,11 +25,12 @@ class MovieManager:
             if movie.id == id:
                 return movie
         raise NotSuchAnId(f"Brak filmu o id: {id}")
-    
+
     def delete_movie(self, id):
         for movie in self.movies:
             if movie.id == id:
                 self.movies.remove(movie)
+                return
         raise NotSuchAnId(f"Nie można usunąć: film o ID {id} nie istnieje")
 
     def update_title(self, id, new_title):
@@ -100,6 +95,12 @@ class MovieManager:
                 movies.append(movie)
         return movies
 
+    def add_comment_to_movie(self, title, user, comment):
+        movie = self.find_movie_by_title(title)
+        if not movie:
+            raise NotSuchAnId("Nie znaleziono filmu o podanym tytule")
+        movie.add_comment(user, comment)
+
 
     def sort_movies_by_rating(self):
         return sorted(self.movies, key=lambda movie: movie.rating, reverse=True) ## DO WYTLUMACZENIA
@@ -124,3 +125,15 @@ class MovieManager:
                 return
 
         raise NotSuchAnId(f"Brak filmu o id: {id}")
+
+    def display_all_movies(self):
+        if not self.movies:
+            print("Brak filmów w kolekcji")
+            return
+        for movie in self.movies:
+            print(movie)
+            if movie.comments:
+                print("  Komentarze:")
+                for c in movie.comments:
+                    print(f"    {c['user']}: {c['comment']}")
+            print()
