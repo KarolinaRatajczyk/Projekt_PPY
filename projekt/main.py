@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QApplication
-from gui_login import LoginWindow
+from projekt.gui.gui_login import LoginWindow
 # from gui_main import MainWindow  # główne okno z listą filmów
 
 app = QApplication([])

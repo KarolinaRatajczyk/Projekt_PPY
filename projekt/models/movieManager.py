@@ -1,4 +1,4 @@
-from exceptions import WrongStatus, NotSuchAnId, EmptyMovieListError
+from projekt.exceptions.exceptions import WrongStatus, NotSuchAnId, EmptyMovieListError
 from movie import Movie
 
 
