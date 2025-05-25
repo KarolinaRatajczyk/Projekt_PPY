@@ -14,5 +14,9 @@ class EmptyMovieListError(Exception):
     "no deleting - it's empty"
     pass
 
+class WrongFileLoading(Exception):
+    "when wrong file loading"
+    pass
+
 
 

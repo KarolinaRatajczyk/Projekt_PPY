@@ -17,12 +17,12 @@ class MovieManager:
             raise NotSuchAnId(f"Movie {movie.title} already exists")
 
         self.movies.append(movie)
-        print(f"Movie {movie.title} added")  ## na razie bez GUI bedziemy testowac na terminalu
+        print(f"Film {movie.title} dodany")  ## na razie bez GUI bedziemy testowac na terminalu
 
 
     def get_movies(self):
         if not self.movies:
-            raise EmptyMovieListError("Movie list is empty. Add some movies first.")
+            raise EmptyMovieListError("Lista filmow pusta")
 
         return self.movies
 
@@ -30,7 +30,7 @@ class MovieManager:
         for movie in self.movies:
             if movie.id == id:
                 return movie
-        raise NotSuchAnId(f"No movie found with ID {id}")
+        raise NotSuchAnId(f"Brak filmu o id: {id}")
     
     def delete_movie(self, id):
         for movie in self.movies:
@@ -110,17 +110,17 @@ class MovieManager:
 
 
     def get_watched_history(self):
-        return [(m.title, m.watch_date) for m in self.movies if m.status == 'watched']
+        return [(m.title, m.watch_date) for m in self.movies if m.status == 'obejrzany']
 
     def set_status(self, id, status):
-        valid_statuses = ["watched", "unwatched"]
+        valid_statuses = ["obejrzany", "nieobejrzany"]
 
         if status not in valid_statuses:
-            raise WrongStatus(f"Invalid status '{status}'. Must be 'watched' or 'unwatched'")
+            raise WrongStatus(f"Zly status '{status}'. Musi byc 'obejrzany' lub 'nieobejrzany'")
 
         for movie in self.movies:
             if movie.id == id:
                 movie.status = status
                 return
 
-        raise NotSuchAnId(f"No movie found with ID {id}")
+        raise NotSuchAnId(f"Brak filmu o id: {id}")

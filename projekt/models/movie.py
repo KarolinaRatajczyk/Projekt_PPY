@@ -1,5 +1,11 @@
+import uuid
+from datetime import date
+
+from tomlkit import comment
+
+
 class Movie:
-    def __init__(self, title, director, year, genre, status, rating, description):
+    def __init__(self, title, director, year, genre, status, rating, description, watch_date=None):
         if not title:
             raise ValueError("Title is required")
         if not director:
@@ -13,16 +19,21 @@ class Movie:
             except ValueError:
                 raise ValueError("Rating must be a number")
 
+
+
+        self.id = str(uuid.uuid4())
         self.title = title
         self.director = director
         self.year = year
         self.genre = genre
         self.status = status
-        self.rating = rating
+        self.rating = float(rating)
         self.description = description
+        self.watch_date = watch_date or (str(date.today()) if status == "watched" else "")
 
         def to_dict(self):
             return {
+                "id": self.id,
                 "title": self.title,
                 "director": self.director,
                 "year": self.year,
@@ -30,6 +41,7 @@ class Movie:
                 "status": self.status,
                 "rating": self.rating,
                 "description": self.description,
+                "watch_date": self.watch_date,
             }
 
         @classmethod
