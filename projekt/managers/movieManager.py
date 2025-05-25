@@ -1,3 +1,5 @@
+import json
+
 from projekt.exceptions.exceptions import WrongStatus, NotSuchAnId, EmptyMovieListError, DuplicateMovieError
 from projekt.models.movie import Movie
 
@@ -137,3 +139,5 @@ class MovieManager:
                 for c in movie.comments:
                     print(f"    {c['user']}: {c['comment']}")
             print()
+
+
