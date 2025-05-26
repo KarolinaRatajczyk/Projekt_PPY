@@ -101,7 +101,27 @@ class MainAppWindow(QWidget):
         right_layout.addWidget(self.add_film_button)
 
 
+
+        self.edit_film_button = QPushButton("✏️ Edytuj film")
+        self.edit_film_button.clicked.connect(self.open_edit_movie_dialog)
+        self.edit_film_button.setStyleSheet("""
+            QPushButton {
+                background-color: #1976D2;;
+                color: white;
+                font-weight: bold;
+                border: none;
+                padding: 10px;
+                border-radius: 5px;
+                }
+                QPushButton:hover {
+                background-color: #1565C0;
+            }""")
+        right_layout.addWidget(self.edit_film_button)
+
+
+
         self.delete_film_button = QPushButton("🗑️ Usuń film")
+        self.delete_film_button.clicked.connect(self.delete_selected_movie)
         self.delete_film_button.setStyleSheet("""
             QPushButton {
                 background-color: #e53935;
@@ -115,7 +135,6 @@ class MainAppWindow(QWidget):
                 background-color: #c62828;
             }
         """)
-        self.delete_film_button.clicked.connect(self.delete_selected_movie)
         right_layout.addWidget(self.delete_film_button)
 
         layout.addLayout(right_layout, 2)
@@ -154,6 +173,23 @@ class MainAppWindow(QWidget):
                 self.user_manager.save_users()
                 self.load_user_movies()
                 self.update_stats()
+
+    def open_edit_movie_dialog(self):
+        index = self.movie_list.currentRow()
+        if index == -1:
+            QMessageBox.warning(self, "Błąd", "Wybierz film do edycji.")
+            return
+
+        from gui.gui_edit_movie import EditMovieWindow
+
+        movie = self.user.movies[index]
+        dialog = EditMovieWindow(self, movie)
+        if dialog.exec():
+            updated_movie = dialog.get_updated_movie()
+            self.user.movies[index] = updated_movie
+            self.user_manager.save_users()
+            self.load_user_movies()
+            self.update_stats()
 
     # === Lista gotowych filmów ===
     def init_sample_tab(self):

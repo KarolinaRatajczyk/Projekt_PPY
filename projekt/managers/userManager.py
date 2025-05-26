@@ -2,16 +2,22 @@
 import json
 import os
 from datetime import datetime
+from pathlib import Path
 
 from exceptions.exceptions import UserError, WrongStatus
 from models.user import User
 
 
 class UserManager:
-    def __init__(self, data_file="../data/users.json"):
+    def __init__(self, data_file=None):
+        if data_file is None:
+            base_dir = Path(__file__).resolve().parent.parent  # <- wracamy do katalogu "projekt"
+            data_file = base_dir / "data" / "users.json"
+        self.data_file = data_file
+
         self.users = []
         self.current_user = None
-        self.data_file = data_file
+
         self._ensure_data_directory()
         self.load_users()
 

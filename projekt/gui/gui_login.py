@@ -3,7 +3,6 @@ from PySide6.QtWidgets import (
     QPushButton, QMessageBox
 )
 from exceptions.exceptions import UserError, WrongStatus
-from gui.gui_register import RegisterWindow
 
 
 class LoginWindow(QDialog):
@@ -11,9 +10,11 @@ class LoginWindow(QDialog):
         super().__init__()
         self.user_manager = user_manager
         self.user = None
-        self.register_window = None
         self.setWindowTitle("Logowanie")
 
+        self.layout = QVBoxLayout(self)
+
+        # Logowanie
         self.username_input = QLineEdit()
         self.username_input.setPlaceholderText("Nazwa użytkownika")
 
@@ -25,17 +26,44 @@ class LoginWindow(QDialog):
         login_button.clicked.connect(self.attempt_login)
 
         register_button = QPushButton("Zarejestruj")
-        register_button.clicked.connect(self.show_register_window)
+        register_button.clicked.connect(self.toggle_register_area)
 
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel("Nazwa użytkownika:"))
-        layout.addWidget(self.username_input)
-        layout.addWidget(QLabel("Hasło:"))
-        layout.addWidget(self.password_input)
-        layout.addWidget(login_button)
-        layout.addWidget(register_button)
+        self.layout.addWidget(QLabel("Nazwa użytkownika:"))
+        self.layout.addWidget(self.username_input)
+        self.layout.addWidget(QLabel("Hasło:"))
+        self.layout.addWidget(self.password_input)
+        self.layout.addWidget(login_button)
+        self.layout.addWidget(register_button)
 
-        self.setLayout(layout)
+        # === REJESTRACJA (ukryta na start) ===
+        self.register_username = QLineEdit()
+        self.register_username.setPlaceholderText("Nowa nazwa użytkownika")
+
+        self.register_password = QLineEdit()
+        self.register_password.setPlaceholderText("Nowe hasło")
+        self.register_password.setEchoMode(QLineEdit.Password)
+
+        self.register_button_submit = QPushButton("Zarejestruj konto")
+        self.register_button_submit.clicked.connect(self.register_user)
+
+        # Ukrywamy domyślnie
+        self.register_username.hide()
+        self.register_password.hide()
+        self.register_button_submit.hide()
+
+        self.layout.addWidget(self.register_username)
+        self.layout.addWidget(self.register_password)
+        self.layout.addWidget(self.register_button_submit)
+
+    def toggle_register_area(self):
+        if self.register_username.isVisible():
+            self.register_username.hide()
+            self.register_password.hide()
+            self.register_button_submit.hide()
+        else:
+            self.register_username.show()
+            self.register_password.show()
+            self.register_button_submit.show()
 
     def attempt_login(self):
         username = self.username_input.text().strip()
@@ -43,22 +71,28 @@ class LoginWindow(QDialog):
         try:
             user = self.user_manager.authenticate_user(username, password)
             self.user = user
-            # QMessageBox.information(self, "Sukces", f"Witaj, {username}!")
             self.accept()
         except (UserError, WrongStatus) as e:
             QMessageBox.critical(self, "Błąd logowania", str(e))
 
-    def show_register_window(self):
-        if self.register_window is None:
-            self.register_window = RegisterWindow(self.user_manager)
-            self.register_window.registration_successful.connect(self.on_registration_successful)
-        self.register_window.show()
-        self.register_window.raise_()
-        self.register_window.activateWindow()
+    def register_user(self):
+        username = self.register_username.text().strip()
+        password = self.register_password.text().strip()
 
-    def on_registration_successful(self):
-        # Po pomyślnej rejestracji wstawiamy nazwę użytkownika do pola logowania
-        self.username_input.setText(self.register_window.username_input.text())
-        self.password_input.clear()
-        self.password_input.setFocus()
-        QMessageBox.information(self, "Rejestracja zakończona", "Możesz się teraz zalogować.")
+        if not username or not password:
+            QMessageBox.warning(self, "Błąd", "Wszystkie pola muszą być wypełnione.")
+            return
+
+        try:
+            self.user_manager.register_user(username, password)
+            QMessageBox.information(self, "Sukces", "Użytkownik zarejestrowany!")
+            self.register_username.clear()
+            self.register_password.clear()
+            self.toggle_register_area()
+
+            # Automatycznie wstaw do loginu:
+            self.username_input.setText(username)
+            self.password_input.setFocus()
+
+        except ValueError as e:
+            QMessageBox.warning(self, "Błąd", str(e))
