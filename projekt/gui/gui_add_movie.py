@@ -1,15 +1,17 @@
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QFormLayout, QLineEdit, QComboBox,
-    QTextEdit, QPushButton, QMessageBox, QListWidget  # 🔧 Dodano QListWidget
+    QTextEdit, QPushButton, QMessageBox, QListWidget
 )
 from models.movie import Movie
+from typing import List, Optional
+
 
 class AddMovieWindow(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None) -> None:
         super().__init__(parent)
 
-        self.movie = None
-        self.comments = []  # 🔧 Przechowywanie komentarzy
+        self.movie: Optional[Movie] = None
+        self.comments: List[str] = []
 
         self.setWindowTitle("Dodaj nowy film")
 
@@ -35,7 +37,6 @@ class AddMovieWindow(QDialog):
 
         layout.addLayout(form)
 
-        # 🔧 Komentarze
         self.comment_input = QTextEdit()
         self.comment_input.setPlaceholderText("Dodaj komentarz...")
         self.add_comment_button = QPushButton("Dodaj komentarz")
@@ -47,14 +48,13 @@ class AddMovieWindow(QDialog):
         layout.addWidget(self.add_comment_button)
         layout.addWidget(self.comment_list)
 
-        # 🔧 Przycisk do dodania filmu
         self.add_button = QPushButton("Dodaj film")
         self.add_button.clicked.connect(self.accept_dialog)
         layout.addWidget(self.add_button)
 
         self.setLayout(layout)
 
-    def add_comment(self):  # 🔧 Funkcja do dodawania komentarzy
+    def add_comment(self) -> None:
         comment = self.comment_input.toPlainText().strip()
         if comment:
             self.comments.append(comment)
@@ -63,7 +63,7 @@ class AddMovieWindow(QDialog):
         else:
             QMessageBox.warning(self, "Błąd", "Komentarz nie może być pusty!")
 
-    def accept_dialog(self):
+    def accept_dialog(self) -> None:
         title = self.title_input.text().strip()
         director = self.director_input.text().strip()
         year = self.year_input.text().strip()
@@ -87,8 +87,8 @@ class AddMovieWindow(QDialog):
         self.movie = Movie(title, director, year, genre, status, rating, description)
         self.accept()
 
-    def get_movie(self):
+    def get_movie(self) -> Optional[Movie]:
         return self.movie
 
-    def get_comments(self):  # 🔧 Dostęp do komentarzy
+    def get_comments(self) -> List[str]:
         return self.comments

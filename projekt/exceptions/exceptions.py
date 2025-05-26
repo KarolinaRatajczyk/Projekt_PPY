@@ -27,8 +27,6 @@ class UserAlreadyExists(Exception):
     "User already exists"
     pass
 
-
-
-class IncorrectPassword:
+class IncorrectPassword(Exception):
     "Incorrect password"
     pass

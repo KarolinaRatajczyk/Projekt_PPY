@@ -1,9 +1,12 @@
 from matplotlib.figure import Figure
+from models.movie import Movie
+from models.user import User
+from typing import Optional
 
 class Statistics:
 
     @staticmethod
-    def plot_ratings_per_movie(user):
+    def plot_ratings_per_movie(user: User) -> Figure:
         fig = Figure(figsize=(6, 4))
         ax = fig.add_subplot(111)
 
@@ -38,7 +41,7 @@ class Statistics:
         return fig
 
     @staticmethod
-    def plot_movies_by_genre(user):
+    def plot_movies_by_genre(user: User) -> Figure:
         fig = Figure(figsize=(5, 5))
         ax = fig.add_subplot(111)
 
@@ -75,7 +78,7 @@ class Statistics:
         return fig
 
     @staticmethod
-    def plot_average_rating(user):
+    def plot_average_rating(user: User) -> Figure:
         fig = Figure(figsize=(4, 3))
         ax = fig.add_subplot(111)
 
@@ -103,7 +106,7 @@ class Statistics:
         return fig
 
     @staticmethod
-    def plot_top_rated_movie(user):
+    def plot_top_rated_movie(user: User) -> Figure:
         fig = Figure(figsize=(5, 3))
         ax = fig.add_subplot(111)
 
@@ -134,7 +137,7 @@ class Statistics:
         return fig
 
     @staticmethod
-    def get_average_rating(user):
+    def get_average_rating(user: User) -> Optional[float]:
         ratings = []
         for m in user.movies:
             if m.rating is not None:
@@ -148,7 +151,7 @@ class Statistics:
         return None
 
     @staticmethod
-    def get_top_rated_movie(user):
+    def get_top_rated_movie(user: User) -> Optional[Movie]:
         rated_movies = []
         for m in user.movies:
             if m.rating is not None:

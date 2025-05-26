@@ -119,7 +119,14 @@
     "rating": null,
     "description": "Mężczyzna zakochuje się w systemie operacyjnym z AI.",
     "watched_date": null,
-    "user_reviews": []
+    "user_reviews": [],
+    "comments": [
+      {
+        "user": "admin",
+        "comment": "komentarz ona",
+        "date": "2025-05-26"
+      }
+    ]
   },
   {
     "title": "Podziemny krąg",

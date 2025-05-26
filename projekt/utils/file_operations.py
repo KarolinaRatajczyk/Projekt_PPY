@@ -1,12 +1,14 @@
 import json
 import csv
+from typing import List, Optional, Union
 
 from exceptions.exceptions import WrongFileLoading
+from models.movie import Movie
 
 
 class FileOperations:
     @staticmethod
-    def save_to_json(movies, filename):
+    def save_to_json(movies: List[Movie], filename: str) -> None:
         try:
             movie_data = []
             for movie in movies:
@@ -19,7 +21,7 @@ class FileOperations:
             raise WrongFileLoading(f"Błąd podczas zapisywania do JSON: {e}")
 
     @staticmethod
-    def load_from_json(filename):
+    def load_from_json(filename: str) -> Union[List[dict], None]:
         try:
             with open(filename, 'r', encoding='utf-8') as f:
                 data = json.load(f)
@@ -30,7 +32,7 @@ class FileOperations:
             raise WrongFileLoading(f"Nieprawidłowy format JSON: {e}")
 
     @staticmethod
-    def export_to_csv(movies, filename):
+    def export_to_csv(movies: List[Movie], filename: str) -> None:
         try:
             with open(filename, 'w', newline='', encoding='utf-8') as f:
                 writer = csv.writer(f)

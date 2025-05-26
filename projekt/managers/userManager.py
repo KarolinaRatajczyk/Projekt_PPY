@@ -2,39 +2,32 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
+from typing import List, Optional
 
 from exceptions.exceptions import UserError, WrongStatus
 from models.user import User
 
 
 class UserManager:
-    def __init__(self, data_file=None):
+    def __init__(self, data_file: Optional[Path] = None) -> None:
         if data_file is None:
-            base_dir = Path(__file__).resolve().parent.parent  # <- wracamy do katalogu "projekt"
+            base_dir = Path(__file__).resolve().parent.parent
             data_file = base_dir / "data" / "users.json"
-        self.data_file = data_file
+        self.data_file: Path = data_file
 
-        self.users = []
-        self.current_user = None
+        self.users: List[User] = []
+        self.current_user: Optional[User] = None
 
         self._ensure_data_directory()
         self.load_users()
 
-
-
-
-    def _ensure_data_directory(self):
-        ## tworzymy jasona jak go nie ma
+    def _ensure_data_directory(self) -> None:
         os.makedirs(os.path.dirname(self.data_file), exist_ok=True)
 
-    def register_user(self, username, password, email=""):
-        # tutaj tworzymy usera
+    def register_user(self, username: str, password: str, email: str = "") -> User:
         if not username.strip():
             raise ValueError("Nazwa nie moze byc pusta")
 
-
-
-        # sprawdz czy uzytkownik juz istnieje
         if self.find_user_by_username(username):
             raise UserError(f"Uzytkownik {username} juz istnieje")
 
@@ -44,9 +37,7 @@ class UserManager:
         print(f"Uzytkownik {username} zarejestrowany")
         return user
 
-    def authenticate_user(self, username, password):
-        ## tutaj przypisujemy usera do zalogowanego usera
-
+    def authenticate_user(self, username: str, password: str) -> User:
         user = self.find_user_by_username(username)
         if not user:
             raise UserError(f"Uzytkownik {username} nie znaleziony")
@@ -61,46 +52,31 @@ class UserManager:
         print(f"Witaj {username}")
         return user
 
-    def logout(self):
-        ## wylogowywanie
-
+    def logout(self) -> None:
         if self.current_user:
             print(f"Wylogowano '{self.current_user.username}'")
             self.current_user = None
         else:
             raise UserError("Brak zalogowanych uzytkownikow")
 
-    def find_user_by_username(self, username):
-        #wiadomo znajdujemy po nazwie
-
+    def find_user_by_username(self, username: str) -> Optional[User]:
         for user in self.users:
             if user.username.lower() == username.lower():
                 return user
         return None
 
-    def find_user_by_id(self, user_id):
-        # znajdujemy po id
-
+    def find_user_by_id(self, user_id: str) -> User:
         for user in self.users:
             if user.id == user_id:
                 return user
         raise UserError(f"Uzytkownik {user_id} nie znaleziony")
 
-    def get_all_users(self):
-        ## dostajemy spis wszystkich
-
-
-
+    def get_all_users(self) -> List[User]:
         if not self.users:
             raise UserError("Brak uzytkownikow")
         return self.users
 
-
-    def delete_user(self, username):
-
-        ## sama nazwa wiadomo co wiadomo kogo
-
-
+    def delete_user(self, username: str) -> None:
         user = self.find_user_by_username(username)
         if not user:
             raise UserError(f"Uzytkownik {user} nie znaleziony")
@@ -112,33 +88,27 @@ class UserManager:
         self.save_users()
         print(f"Uzytkownik {username} pomyślnie usuniety")
 
-    def change_password(self, username, old_password, new_password):
-        # zmien haslo
-
-
+    def change_password(self, username: str, old_password: str, new_password: str) -> None:
         user = self.find_user_by_username(username)
         if not user:
             raise UserError(f"Uzytkownik {user} nie znaleziony")
 
         if not user.check_password(old_password):
             raise UserError(f"Zle haslo")
-            # tu damy okienko gui
 
-        user.password_hash = user._hash_password(new_password)
+        user.password = new_password  # opcjonalnie zastosuj hash
         self.save_users()
         print(f"Haslo zmienione dla uzytkownika {username}\n")
         print(f"Nowe haslo {new_password}")
 
-    def is_logged_in(self):
-        ## sprawdz czy zalogowany
+    def is_logged_in(self) -> bool:
         return self.current_user is not None
 
-    def save_users(self):
+    def save_users(self) -> None:
         try:
             user_data = []
             for user in self.users:
                 data = user.to_dict()
-                # Zamiana datetime na string przy zapisie
                 for key in ["created_at", "last_login"]:
                     if isinstance(data.get(key), datetime):
                         data[key] = data[key].strftime("%Y-%m-%d %H:%M:%S")
@@ -150,7 +120,7 @@ class UserManager:
         except Exception as e:
             print(f"Nie udało się zapisać użytkowników: {e}")
 
-    def load_users(self):
+    def load_users(self) -> None:
         try:
             if os.path.exists(self.data_file):
                 with open(self.data_file, 'r', encoding='utf-8') as f:

@@ -253,7 +253,7 @@ class MainAppWindow(QWidget):
         right_panel.addWidget(self.add_comment_button)
 
         # self.sample_comment_edit.setPlaceholderText("Dodaj komentarz (opcjonalnie)")
-        # right_panel.addWidget(self.sample_comment_edit)
+        right_panel.addWidget(self.sample_comment_edit)
 
 
 
@@ -476,9 +476,10 @@ class MainAppWindow(QWidget):
         elif current == "Rok (malejąco)":
             sorted_movies = sorted(self.user.movies, key=lambda m: m.year, reverse=True)
         elif current == "Ocena (rosnąco)":
-            sorted_movies = sorted(self.user.movies, key=lambda m: m.rating)
+            sorted_movies = sorted(self.user.movies, key=lambda m: float(m.rating))
         elif current == "Ocena (malejąco)":
-            sorted_movies = sorted(self.user.movies, key=lambda m: m.rating, reverse=True)
+            sorted_movies = sorted(self.user.movies, key=lambda m: float(m.rating), reverse=True)
+
         else:
             sorted_movies = self.user.movies
 

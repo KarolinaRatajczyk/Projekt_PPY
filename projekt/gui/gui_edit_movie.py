@@ -1,9 +1,10 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QComboBox, QTextEdit, QPushButton, \
-    QMessageBox
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QComboBox, QTextEdit, QPushButton, QMessageBox
 from models.movie import Movie
+from typing import Optional
+
 
 class EditMovieWindow(QDialog):
-    def __init__(self, parent, movie: Movie):
+    def __init__(self, parent, movie: Movie) -> None:
         super().__init__(parent)
         self.setWindowTitle("Edytuj film")
         self.movie = movie
@@ -38,7 +39,7 @@ class EditMovieWindow(QDialog):
 
         self.setLayout(layout)
 
-    def validate_and_accept(self):
+    def validate_and_accept(self) -> None:
         title = self.title_input.text().strip()
         director = self.director_input.text().strip()
         if not title or not director:
@@ -56,7 +57,7 @@ class EditMovieWindow(QDialog):
 
         self.accept()
 
-    def get_updated_movie(self):
+    def get_updated_movie(self) -> Movie:
         movie = Movie(
             title=self.title_input.text().strip(),
             director=self.director_input.text().strip(),

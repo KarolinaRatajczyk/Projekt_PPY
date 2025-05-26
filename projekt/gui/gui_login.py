@@ -3,13 +3,16 @@ from PySide6.QtWidgets import (
     QPushButton, QMessageBox
 )
 from exceptions.exceptions import UserError, WrongStatus
+from managers.userManager import UserManager
+from models.user import User
+from typing import Optional
 
 
 class LoginWindow(QDialog):
-    def __init__(self, user_manager):
+    def __init__(self, user_manager: UserManager) -> None:
         super().__init__()
         self.user_manager = user_manager
-        self.user = None
+        self.user: Optional[User] = None
         self.setWindowTitle("Logowanie")
 
         self.layout = QVBoxLayout(self)
@@ -55,7 +58,7 @@ class LoginWindow(QDialog):
         self.layout.addWidget(self.register_password)
         self.layout.addWidget(self.register_button_submit)
 
-    def toggle_register_area(self):
+    def toggle_register_area(self) -> None:
         if self.register_username.isVisible():
             self.register_username.hide()
             self.register_password.hide()
@@ -65,7 +68,7 @@ class LoginWindow(QDialog):
             self.register_password.show()
             self.register_button_submit.show()
 
-    def attempt_login(self):
+    def attempt_login(self) -> None:
         username = self.username_input.text().strip()
         password = self.password_input.text().strip()
         try:
@@ -75,7 +78,7 @@ class LoginWindow(QDialog):
         except (UserError, WrongStatus) as e:
             QMessageBox.critical(self, "Błąd logowania", str(e))
 
-    def register_user(self):
+    def register_user(self) -> None:
         username = self.register_username.text().strip()
         password = self.register_password.text().strip()
 
@@ -85,12 +88,10 @@ class LoginWindow(QDialog):
 
         try:
             self.user_manager.register_user(username, password)
-            # QMessageBox.information(self, "Sukces", "Użytkownik zarejestrowany!")
             self.register_username.clear()
             self.register_password.clear()
             self.toggle_register_area()
 
-            # Automatycznie wstaw do loginu:
             self.username_input.setText(username)
             self.password_input.setFocus()
 
