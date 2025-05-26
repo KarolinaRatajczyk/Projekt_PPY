@@ -40,8 +40,6 @@ class UserManager:
         return user
 
     def authenticate_user(self, username, password):
-
-
         ## tutaj przypisujemy usera do zalogowanego usera
 
         user = self.find_user_by_username(username)
@@ -91,9 +89,6 @@ class UserManager:
         if not self.users:
             raise UserError("Brak uzytkownikow")
         return self.users
-
-
-
 
 
     def delete_user(self, username):

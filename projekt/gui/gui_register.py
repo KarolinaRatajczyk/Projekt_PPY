@@ -5,7 +5,6 @@ from PySide6.QtWidgets import (
 )
 from exceptions.exceptions import UserAlreadyExists
 
-
 class RegisterWindow(QWidget):
     registration_successful = Signal()
 
@@ -40,7 +39,7 @@ class RegisterWindow(QWidget):
         try:
             self.user_manager.register_user(username, password)
             QMessageBox.information(self, "Sukces", "Użytkownik zarejestrowany!")
-            self.registration_successful.emit()  # emitujemy sygnał do LoginWindow
+            self.registration_successful.emit()
             self.close()
         except UserAlreadyExists:
             QMessageBox.warning(self, "Błąd", "Użytkownik już istnieje.")

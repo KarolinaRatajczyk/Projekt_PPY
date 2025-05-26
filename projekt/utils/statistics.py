@@ -1,5 +1,3 @@
-from PySide6.QtWidgets import QVBoxLayout
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 class Statistics:
@@ -9,8 +7,8 @@ class Statistics:
         fig = Figure(figsize=(6, 3))
         ax = fig.add_subplot(111)
 
-        watched = [m.rating for m in user.movies if m.status.lower() == "obejrzany" and m.rating is not None]
-        labels = [m.title for m in user.movies if m.status.lower() == "obejrzany" and m.rating is not None]
+        watched = [m.rating for m in user.movies if m.status.lower() == "watched" and m.rating is not None]
+        labels = [m.title for m in user.movies if m.status.lower() == "watched" and m.rating is not None]
 
         if watched:
             ax.bar(labels, watched, color='skyblue')

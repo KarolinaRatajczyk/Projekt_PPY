@@ -14,10 +14,11 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 
 class MainAppWindow(QWidget):
-    def __init__(self, user, movie_manager: MovieManager):
+    def __init__(self, user, movie_manager: MovieManager, user_manager):
         super().__init__()
         self.user = user
         self.movie_manager = movie_manager
+        self.user_manager = user_manager
         self.setWindowTitle(f"Witaj, {self.user.username}!")
         self.resize(800, 500)
 
@@ -129,6 +130,7 @@ class MainAppWindow(QWidget):
         self.clear_form()
         QMessageBox.information(self, "Sukces", f"Dodano film '{title}'")
         self.update_stats()
+        self.user_manager.save_users()
 
     def clear_form(self):
         self.title_input.clear()
@@ -186,6 +188,7 @@ class MainAppWindow(QWidget):
         self.sample_comment.clear()
         QMessageBox.information(self, "Dodano", f"Film '{movie.title}' został dodany.")
 
+        self.user_manager.save_users()
 
     def init_stats_tab(self):
         scroll = QScrollArea()
@@ -210,3 +213,7 @@ class MainAppWindow(QWidget):
         layout = QVBoxLayout()
         layout.addWidget(scroll)
         self.stats_tab.setLayout(layout)
+
+    def update_stats(self):
+        pass
+

@@ -21,6 +21,6 @@ if __name__ == "__main__":
     if login_dialog.exec():
         user = login_dialog.user
 
-        main_window = MainAppWindow(user, movie_manager)
+        main_window = MainAppWindow(user, movie_manager, user_manager)
         main_window.show()
         sys.exit(app.exec())  # <- aplikacja działa dopóki okno jest otwarte
