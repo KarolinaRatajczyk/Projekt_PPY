@@ -214,66 +214,37 @@ class MainAppWindow(QWidget):
             self.load_user_movies()
             self.update_stats()
 
-    # === Lista gotowych filmów ===
-    # def init_sample_tab(self):
-    #     layout = QHBoxLayout()
-    #     self.sample_tab.setLayout(layout)
-    #
-    #     # Lewa strona: lista filmów
-    #     left_layout = QVBoxLayout()
-    #     self.sample_list = QListWidget()
-    #     self.sample_list.itemClicked.connect(self.show_sample_movie_details)
-    #     left_layout.addWidget(QLabel("📽️ Filmy z bazy:"))
-    #     left_layout.addWidget(self.sample_list)
-    #
-    #     layout.addLayout(left_layout, 1)
-    #
-    #     # Prawa strona: szczegóły i komentarze
-    #     self.sample_details_box = QGroupBox("📄 Szczegóły filmu")
-    #     self.sample_details_layout = QVBoxLayout()
-    #     self.sample_details_label = QLabel("Wybierz film z lewej strony.")
-    #     self.sample_details_label.setWordWrap(True)
-    #     self.sample_details_layout.addWidget(self.sample_details_label)
-    #
-    #     self.sample_comment_edit = QTextEdit()
-    #     self.sample_comment_edit.setPlaceholderText("Dodaj swój komentarz...")
-    #     self.sample_details_layout.addWidget(self.sample_comment_edit)
-    #
-    #     self.add_sample_button = QPushButton("➕ Dodaj film do moich")
-    #     self.add_sample_button.clicked.connect(self.add_selected_sample)
-    #     self.sample_details_layout.addWidget(self.add_sample_button)
-    #
-    #     self.sample_details_box.setLayout(self.sample_details_layout)
-    #     layout.addWidget(self.sample_details_box, 2)
-    #
-    #     # Wczytaj filmy z JSON
-    #     base_dir = Path(__file__).resolve().parent.parent
-    #     self.sample_file = base_dir / "data" / "sample_movies.json"
-    #     with self.sample_file.open("r", encoding="utf-8") as f:
-    #         self.sample_movies = json.load(f)
-    #
-    #     for movie in self.sample_movies:
-    #         self.sample_list.addItem(f"{movie['title']} ({movie['year']})")
     def init_sample_tab(self):
         layout = QVBoxLayout()
         self.sample_tab.setLayout(layout)
 
+        # 🔍 Pasek wyszukiwania
+        self.search_input_sample = QLineEdit()
+        self.search_input_sample.setPlaceholderText("Szukaj w bazie filmów...")
+        self.search_input_sample.textChanged.connect(self.search_sample_movies)
+        layout.addWidget(self.search_input_sample)
+
         self.sample_list = QListWidget()
+        self.sample_list.itemClicked.connect(self.show_sample_movie_details)
         layout.addWidget(self.sample_list)
 
-        self.sample_comment = QTextEdit()
-        self.sample_comment.setPlaceholderText("Dodaj komentarz (opcjonalnie)")
-        layout.addWidget(self.sample_comment)
+        self.sample_details_label = QLabel("Wybierz film z listy, by zobaczyć szczegóły.")
+        self.sample_details_label.setWordWrap(True)
+        layout.addWidget(self.sample_details_label)
+
+        self.sample_comment_edit = QTextEdit()
+        self.sample_comment_edit.setPlaceholderText("Dodaj komentarz (opcjonalnie)")
+        layout.addWidget(self.sample_comment_edit)
 
         self.add_sample_button = QPushButton("Dodaj wybrany film do moich")
         self.add_sample_button.clicked.connect(self.add_selected_sample)
         layout.addWidget(self.add_sample_button)
 
         base_dir = Path(__file__).resolve().parent.parent
-        json_file = base_dir / "data" / "sample_movies.json"
+        self.sample_file = base_dir / "data" / "sample_movies.json"
 
-        with json_file.open("r", encoding="utf-8") as f:
-            self.sample_movies = json.load(f)  # lista słowników, nie obiektów Movie
+        with self.sample_file.open("r", encoding="utf-8") as f:
+            self.sample_movies = json.load(f)
 
         for movie in self.sample_movies:
             self.sample_list.addItem(f"{movie['title']} ({movie['year']})")

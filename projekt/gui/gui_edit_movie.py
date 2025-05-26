@@ -17,7 +17,7 @@ class EditMovieWindow(QDialog):
         self.year_input = QLineEdit(str(movie.year))
         self.genre_input = QLineEdit(movie.genre)
         self.status_input = QComboBox()
-        self.status_input.addItems(["Watched", "Unwatched"])
+        self.status_input.addItems(["Obejrzano", "Jeszcze nie obejrzano"])
         self.status_input.setCurrentText(movie.status)
         self.rating_input = QLineEdit(str(movie.rating) if movie.rating is not None else "")
         self.description_input = QTextEdit(movie.description)
