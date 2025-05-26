@@ -535,9 +535,9 @@ class MainAppWindow(QWidget):
         elif current == "Rok (malejąco)":
             self.filtered_movies.sort(key=lambda m: m.year, reverse=True)
         elif current == "Ocena (rosnąco)":
-            self.filtered_movies.sort(key=lambda m: float(m.rating))
+            self.filtered_movies.sort(key=lambda m: float(m.rating) if m.rating is not None else -1)
         elif current == "Ocena (malejąco)":
-            self.filtered_movies.sort(key=lambda m: float(m.rating), reverse=True)
+            self.filtered_movies.sort(key=lambda m: float(m.rating) if m.rating is not None else -1, reverse=True)
 
         self.update_movie_list_widget()
 

@@ -159,7 +159,14 @@
     "rating": null,
     "description": "Portier hotelowy zostaje wrobiony w morderstwo.",
     "watched_date": null,
-    "user_reviews": []
+    "user_reviews": [],
+    "comments": [
+      {
+        "user": "admin",
+        "comment": "kom test",
+        "date": "2025-05-26"
+      }
+    ]
   },
   {
     "title": "Nowy początek",
@@ -181,7 +188,19 @@
     "rating": 7.0,
     "description": "Policjant infiltruje gang nielegalnych wyścigów ulicznych.",
     "watched_date": null,
-    "user_reviews": []
+    "user_reviews": [],
+    "comments": [
+      {
+        "user": "admin",
+        "comment": "komentarz",
+        "date": "2025-05-26"
+      },
+      {
+        "user": "admin2",
+        "comment": "komentarz2",
+        "date": "2025-05-26"
+      }
+    ]
   },
   {
     "title": "Szybcy i wściekli 5",
@@ -327,4 +346,3 @@
     "user_reviews": []
   }
 ]
-

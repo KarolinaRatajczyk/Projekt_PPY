@@ -3,14 +3,14 @@ from matplotlib.figure import Figure
 from collections import Counter
 from matplotlib import pyplot as plt
 
-from models.user import User  # zakładam, że masz klasę User i Movie w osobnych plikach
+from models.user import User
 from models.movie import Movie
 
 class Statistics:
 
     @staticmethod
     def plot_ratings_per_movie(user: User) -> Figure:
-        watched: List[Movie] = [m for m in user.movies if m.status.lower() == "obejrzano" and m.rating is not None]
+        watched: List[Movie] = [m for m in user.movies if m.status.lower().startswith("obejrzano") and m.rating is not None]
         titles: List[str] = [m.title for m in watched]
         ratings: List[float] = [float(m.rating) for m in watched]
 
@@ -38,6 +38,7 @@ class Statistics:
         else:
             ax.text(0.5, 0.5, "Brak danych o gatunkach", ha="center", va="center", transform=ax.transAxes)
             ax.axis("off")
+        plt.close(fig)
         return fig
 
     @staticmethod
@@ -49,6 +50,7 @@ class Statistics:
         ax.bar(["Obejrzane", "Do obejrzenia"], [watched, unwatched], color=["#2196F3", "#FFC107"])
         ax.set_title("Status filmów")
         ax.set_ylabel("Liczba filmów")
+        plt.close(fig)
         return fig
 
     @staticmethod
@@ -70,6 +72,7 @@ class Statistics:
         ax.axis("off")
         plt.tight_layout()
         plt.close(fig)
+        plt.close(fig)
         return fig
 
     @staticmethod
@@ -90,6 +93,13 @@ class Statistics:
         lines = [f"{i + 1}. {m.title} ({m.year}) – {m.rating}/10" for i, m in enumerate(top_movies)]
         summary = "Top najwyżej oceniane filmy:\n" + "\n".join(lines)
         return summary
+
+    @staticmethod
+    def get_average_rating(user: User) -> Optional[float]:
+        ratings = [float(m.rating) for m in user.movies if m.rating is not None]
+        if not ratings:
+            return None
+        return sum(ratings) / len(ratings)
 
 
 
