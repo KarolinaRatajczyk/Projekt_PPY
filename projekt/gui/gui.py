@@ -130,13 +130,15 @@ class MainAppWindow(QWidget):
         index = self.movie_list.row(item)
         movie = self.user.movies[index]
         text = (
-            f"<b>{movie.title} ({movie.year})</b><br>"
-            f"Reżyser: {movie.director}<br>"
-            f"Gatunek: {movie.genre}<br>"
-            f"Status: {movie.status}<br>"
-            f"Ocena: {movie.rating}<br>"
-            f"Opis: {movie.description}<br>"
-            f"Data obejrzenia: {getattr(movie, 'watch_date', 'Brak')}"
+            f"<h3 style='margin-bottom: 10px;'>{movie.title} ({movie.year})</h3>"
+            f"<div style='font-size: 13px;'>"
+            f"<b>Reżyser:</b> {movie.director}<br>"
+            f"<b>Gatunek:</b> {movie.genre}<br>"
+            f"<b>Status:</b> {movie.status}<br>"
+            f"<b>Ocena:</b> {movie.rating}<br>"
+            f"<b>Opis:</b> {movie.description}<br>"
+            f"<b>Data obejrzenia:</b> {getattr(movie, 'watch_date', 'Brak')}"
+            f"</div>"
         )
         self.details_label.setText(text)
         self.update_stats()
@@ -279,5 +281,3 @@ class MainAppWindow(QWidget):
             self.load_user_movies()
             self.details_label.setText("Wybierz film z listy")
             self.update_stats()
-
-

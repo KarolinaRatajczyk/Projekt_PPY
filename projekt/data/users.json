@@ -5,7 +5,7 @@
     "password": "admin123",
     "email": "",
     "created_at": "2025-05-25 18:13:15.684876",
-    "last_login": "2025-05-26 18:01:20",
+    "last_login": "2025-05-26 18:43:56",
     "movies": [
       {
         "id": "ed151ae5-4c05-488b-848f-68a8ff9793dc",
@@ -113,6 +113,54 @@
         "rating": null,
         "description": "A poor family schemes to become employed by a wealthy household.",
         "watch_date": "",
+        "comments": []
+      },
+      {
+        "id": "593c85a9-25db-4385-8581-338992ef3fd4",
+        "title": "Mad Max: Fury Road",
+        "director": "George Miller",
+        "year": 2015,
+        "genre": "Action",
+        "status": "Watched",
+        "rating": 8.1,
+        "description": "In a post-apocalyptic wasteland, Max joins a rebellion.",
+        "watch_date": "2023-03-08",
+        "comments": []
+      },
+      {
+        "id": "5b041c04-7b24-4730-bcc4-daf01a70f0a9",
+        "title": "Interstellar",
+        "director": "Christopher Nolan",
+        "year": 2014,
+        "genre": "Sci-Fi",
+        "status": "Watched",
+        "rating": 8.6,
+        "description": "A team travels through a wormhole in search of a new home for humanity.",
+        "watch_date": "2023-02-20",
+        "comments": []
+      },
+      {
+        "id": "bb3c4842-356e-4db1-92ab-b1591c96e73a",
+        "title": "The Social Network",
+        "director": "David Fincher",
+        "year": 2010,
+        "genre": "Biography",
+        "status": "Watched",
+        "rating": 7.7,
+        "description": "The story of the creation of Facebook.",
+        "watch_date": "2022-09-17",
+        "comments": []
+      },
+      {
+        "id": "43618908-3122-4cbf-9305-aad9dda25c1b",
+        "title": "Fight Club",
+        "director": "David Fincher",
+        "year": 1999,
+        "genre": "Drama",
+        "status": "Watched",
+        "rating": 8.8,
+        "description": "An insomniac office worker forms an underground fight club.",
+        "watch_date": "2023-01-14",
         "comments": []
       }
     ]
