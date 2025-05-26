@@ -76,7 +76,6 @@ class MovieManager:
                 return
         raise NotSuchAnId(f"Brak filmu o ID: {id} (próba aktualizacji opisu)")
 
-
     def find_movie_by_title(self, title):
         for movie in self.movies:
             if movie.title == title:

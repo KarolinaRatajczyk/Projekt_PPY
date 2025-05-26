@@ -98,8 +98,25 @@ class MainAppWindow(QWidget):
                     background-color: #45a049;
                 }
         """)
-
         right_layout.addWidget(self.add_film_button)
+
+
+        self.delete_film_button = QPushButton("🗑️ Usuń film")
+        self.delete_film_button.setStyleSheet("""
+            QPushButton {
+                background-color: #e53935;
+                color: white;
+                font-weight: bold;
+                border: none;
+                padding: 10px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #c62828;
+            }
+        """)
+        self.delete_film_button.clicked.connect(self.delete_selected_movie)
+        right_layout.addWidget(self.delete_film_button)
 
         layout.addLayout(right_layout, 2)
         self.load_user_movies()
@@ -135,46 +152,6 @@ class MainAppWindow(QWidget):
                 self.user_manager.save_users()
                 self.load_user_movies()
                 self.update_stats()
-
-    # def add_movie(self):
-    #     title = self.title_input.text().strip()
-    #     director = self.director_input.text().strip()
-    #     year = self.year_input.text().strip()
-    #     genre = self.genre_input.text().strip()
-    #     status = self.status_input.currentText()
-    #     rating_text = self.rating_input.text().strip()
-    #     description = self.description_input.toPlainText().strip()
-    #
-    #     if not title or not director:
-    #         QMessageBox.warning(self, "Błąd", "Tytuł i reżyser są wymagane!")
-    #         return
-    #
-    #     try:
-    #         rating = float(rating_text) if rating_text else None
-    #         if rating is not None and not (0 <= rating <= 10):
-    #             raise ValueError()
-    #     except ValueError:
-    #         QMessageBox.warning(self, "Błąd", "Ocena musi być liczbą od 0 do 10")
-    #         return
-    #
-    #     movie = Movie(title, director, year, genre, status, rating, description)
-    #     self.user.movies.append(movie)
-    #     self.load_user_movies()
-    #     self.clear_form()
-    #     QMessageBox.information(self, "Sukces", f"Dodano film '{title}'")
-    #
-    #     self.user_manager.save_users()
-    #
-    #     self.update_stats()
-
-    def clear_form(self):
-        self.title_input.clear()
-        self.director_input.clear()
-        self.year_input.clear()
-        self.genre_input.clear()
-        self.rating_input.clear()
-        self.description_input.clear()
-        self.status_input.setCurrentIndex(0)
 
     # === Lista gotowych filmów ===
     def init_sample_tab(self):
@@ -280,5 +257,27 @@ class MainAppWindow(QWidget):
             summary = f"Średnia ocena: {avg:.2f}   |   Najlepszy film: {top.title} ({top.rating}/10)"
         else:
             summary = "Brak wystarczających danych do podsumowania"
+
+
+    def delete_selected_movie(self):
+        index = self.movie_list.currentRow()
+        if index == -1:
+            QMessageBox.warning(self, "Błąd", "Nie wybrano żadnego filmu do usunięcia.")
+            return
+
+        confirm = QMessageBox.question(
+            self,
+            "Potwierdź usunięcie",
+            "Czy na pewno chcesz usunąć ten film?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+
+        if confirm == QMessageBox.StandardButton.Yes:
+            movie = self.user.movies[index]
+            del self.user.movies[index]
+            self.user_manager.save_users()
+            self.load_user_movies()
+            self.details_label.setText("Wybierz film z listy")
+            self.update_stats()
 
 
