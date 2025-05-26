@@ -94,7 +94,7 @@ class UserManager:
             raise UserError(f"Uzytkownik {user} nie znaleziony")
 
         if not user.check_password(old_password):
-            raise UserError(f"Zle haslo")
+            raise UserError(f"Złe haslo")
 
         user.password = new_password  # opcjonalnie zastosuj hash
         self.save_users()

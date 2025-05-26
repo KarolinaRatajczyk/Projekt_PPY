@@ -29,6 +29,8 @@ class MainAppWindow(QWidget):
         layout.addWidget(self.tabs)
         self.setLayout(layout)
 
+        self.filtered_movies = self.user.movies.copy()
+
         # --- TAB 1: Lista filmów użytkownika
         self.user_tab = QWidget()
         self.init_user_tab()
@@ -162,20 +164,18 @@ class MainAppWindow(QWidget):
 
     def search_user_movies(self, text):
         text = text.strip().lower()
-        self.movie_list.clear()
-
-        for movie in self.user.movies:
-            if text in movie.title.lower():
-                self.movie_list.addItem(f"{movie.title} ({movie.year})")
+        self.filtered_movies = [movie for movie in self.user.movies if text in movie.title.lower()]
+        self.update_movie_list_widget()
 
     def load_user_movies(self):
-        self.movie_list.clear()
-        for movie in self.user.movies:
-            self.movie_list.addItem(f"{movie.title} ({movie.year})")
+        self.filtered_movies = self.user.movies.copy()
+        self.update_movie_list_widget()
 
     def show_movie_details(self, item):
         index = self.movie_list.row(item)
-        movie = self.user.movies[index]
+        if index < 0 or index >= len(self.filtered_movies):
+            return
+        movie = self.filtered_movies[index]
 
         # ✅ Zmieniono: movie['status'] → movie.status
         if movie.status.lower() == "watched":
@@ -213,17 +213,20 @@ class MainAppWindow(QWidget):
             QMessageBox.warning(self, "Błąd", "Wybierz film do edycji.")
             return
 
+        movie = self.filtered_movies[index]
         from gui.gui_edit_movie import EditMovieWindow
 
-        movie = self.user.movies[index]
         dialog = EditMovieWindow(self, movie)
         if dialog.exec():
             updated_movie = dialog.get_updated_movie()
-            self.user.movies[index] = updated_movie
+
+            # Znajdź prawdziwy indeks w self.user.movies
+            original_index = self.user.movies.index(movie)
+            self.user.movies[original_index] = updated_movie
+
             self.user_manager.save_users()
             self.load_user_movies()
             self.update_stats()
-
 
     def init_sample_tab(self):
         main_layout = QVBoxLayout()
@@ -413,7 +416,6 @@ class MainAppWindow(QWidget):
         else:
             summary = "Brak wystarczających danych do podsumowania"
 
-
     def delete_selected_movie(self):
         index = self.movie_list.currentRow()
         if index == -1:
@@ -428,8 +430,8 @@ class MainAppWindow(QWidget):
         )
 
         if confirm == QMessageBox.StandardButton.Yes:
-            movie = self.user.movies[index]
-            del self.user.movies[index]
+            movie = self.filtered_movies[index]
+            self.user.movies.remove(movie)
             self.user_manager.save_users()
             self.load_user_movies()
             self.details_label.setText("Wybierz film z listy")
@@ -468,21 +470,21 @@ class MainAppWindow(QWidget):
         current = self.sort_combo_user.currentText()
 
         if current == "Tytuł A-Z":
-            sorted_movies = sorted(self.user.movies, key=lambda m: m.title.lower())
+            self.filtered_movies.sort(key=lambda m: m.title.lower())
         elif current == "Tytuł Z-A":
-            sorted_movies = sorted(self.user.movies, key=lambda m: m.title.lower(), reverse=True)
+            self.filtered_movies.sort(key=lambda m: m.title.lower(), reverse=True)
         elif current == "Rok (rosnąco)":
-            sorted_movies = sorted(self.user.movies, key=lambda m: m.year)
+            self.filtered_movies.sort(key=lambda m: m.year)
         elif current == "Rok (malejąco)":
-            sorted_movies = sorted(self.user.movies, key=lambda m: m.year, reverse=True)
+            self.filtered_movies.sort(key=lambda m: m.year, reverse=True)
         elif current == "Ocena (rosnąco)":
-            sorted_movies = sorted(self.user.movies, key=lambda m: float(m.rating))
+            self.filtered_movies.sort(key=lambda m: float(m.rating))
         elif current == "Ocena (malejąco)":
-            sorted_movies = sorted(self.user.movies, key=lambda m: float(m.rating), reverse=True)
+            self.filtered_movies.sort(key=lambda m: float(m.rating), reverse=True)
 
-        else:
-            sorted_movies = self.user.movies
+        self.update_movie_list_widget()
 
+    def update_movie_list_widget(self):
         self.movie_list.clear()
-        for movie in sorted_movies:
+        for movie in self.filtered_movies:
             self.movie_list.addItem(f"{movie.title} ({movie.year})")

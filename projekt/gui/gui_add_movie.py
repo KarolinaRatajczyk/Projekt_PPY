@@ -23,7 +23,7 @@ class AddMovieWindow(QDialog):
         self.year_input = QLineEdit()
         self.genre_input = QLineEdit()
         self.status_input = QComboBox()
-        self.status_input.addItems(["obejrzany", "do obejrzenia"])
+        self.status_input.addItems(["Obejrzano", "Do obejrzenia"])
         self.rating_input = QLineEdit()
         self.description_input = QTextEdit()
 

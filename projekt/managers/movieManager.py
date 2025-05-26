@@ -15,7 +15,7 @@ class MovieManager:
             if m.title.lower() == movie.title.lower():
                 raise DuplicateMovieError(f"Film '{movie.title}' już istnieje!")
 
-        movie.status = "Nieobejrzany"
+        movie.status = "Do obejrzenia"
         movie.watch_date = None
         self.movies.append(movie)
 
@@ -115,19 +115,19 @@ class MovieManager:
         return [(m.title, m.watch_date) for m in self.movies if m.status == 'watched']
 
     def set_status(self, id: str, status: str) -> None:
-        valid_statuses = ["watched", "unwatched"]
+        valid_statuses = ["Obejrzano", "Do obejrzenia"]
 
         if status not in valid_statuses:
-            raise WrongStatus(f"Zły status '{status}'. Musi być 'watched' lub 'unwatched'")
+            raise WrongStatus(f"Zły status '{status}'. Musi być 'Obejrzano' lub 'Do obejrzenia'")
 
         for movie in self.movies:
             if movie.id == id:
-                if status == "watched":
+                if status == "Obejrzano":
                     today = date.today().isoformat()
                     movie.status = f"Obejrzano: {today}"
                     movie.watch_date = today
                 else:
-                    movie.status = "Jeszcze nieobejrzany"
+                    movie.status = "Do obejrzenia"
                     movie.watch_date = None
                 return
 

@@ -12,7 +12,7 @@ class Statistics:
 
         movies = []
         for m in user.movies:
-            if m.status.lower() in ("watched", "obejrzany") and m.rating is not None:
+            if m.status == "Obejrzano" and m.rating is not None:
                 movies.append(m)
 
         ratings = []
