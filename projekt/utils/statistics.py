@@ -123,8 +123,10 @@ class Statistics:
             ax.set_title("Najlepiej oceniany film")
             ax.set_ylabel("Ocena")
 
-            ax.bar_label(bar, fmt="%.1f", padding=5, fontsize=10)
+            ax.set_xticks([0])
             ax.set_xticklabels([top_movie.title], rotation=15, ha='center', fontsize=9)
+
+            ax.bar_label(bar, fmt="%.1f", padding=5, fontsize=10)
         else:
             ax.text(0.5, 0.5, "Brak ocenionych filmów", ha='center', va='center')
 

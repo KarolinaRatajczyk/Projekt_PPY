@@ -56,29 +56,9 @@ class MainAppWindow(QWidget):
         self.details_label.setWordWrap(True)
         right_layout.addWidget(self.details_label, 2)
 
-        form_layout = QFormLayout()
-        self.title_input = QLineEdit()
-        self.director_input = QLineEdit()
-        self.year_input = QLineEdit()
-        self.genre_input = QLineEdit()
-        self.status_input = QComboBox()
-        self.status_input.addItems(["obejrzany", "do obejrzenia"])
-        self.rating_input = QLineEdit()
-        self.description_input = QTextEdit()
-
-        form_layout.addRow("Tytuł:", self.title_input)
-        form_layout.addRow("Reżyser:", self.director_input)
-        form_layout.addRow("Rok:", self.year_input)
-        form_layout.addRow("Gatunek:", self.genre_input)
-        form_layout.addRow("Status:", self.status_input)
-        form_layout.addRow("Ocena (0-10):", self.rating_input)
-        form_layout.addRow("Opis:", self.description_input)
-
-        right_layout.addLayout(form_layout)
-
-        self.add_button = QPushButton("Dodaj film")
-        self.add_button.clicked.connect(self.add_movie)
-        right_layout.addWidget(self.add_button)
+        self.add_film_button = QPushButton("➕ Dodaj film ręcznie")
+        self.add_film_button.clicked.connect(self.open_add_movie_dialog)
+        right_layout.addWidget(self.add_film_button)
 
         layout.addLayout(right_layout, 2)
         self.load_user_movies()
@@ -103,36 +83,48 @@ class MainAppWindow(QWidget):
         self.details_label.setText(text)
         self.update_stats()
 
-    def add_movie(self):
-        title = self.title_input.text().strip()
-        director = self.director_input.text().strip()
-        year = self.year_input.text().strip()
-        genre = self.genre_input.text().strip()
-        status = self.status_input.currentText()
-        rating_text = self.rating_input.text().strip()
-        description = self.description_input.toPlainText().strip()
+    def open_add_movie_dialog(self):
+        from gui.gui_add_movie import AddMovieWindow
 
-        if not title or not director:
-            QMessageBox.warning(self, "Błąd", "Tytuł i reżyser są wymagane!")
-            return
+        dialog = AddMovieWindow(self)
+        if dialog.exec():
+            new_movie = dialog.get_movie()
+            if new_movie:
+                self.user.movies.append(new_movie)
+                self.user_manager.save_users()
+                self.load_user_movies()
+                self.update_stats()
 
-        try:
-            rating = float(rating_text) if rating_text else None
-            if rating is not None and not (0 <= rating <= 10):
-                raise ValueError()
-        except ValueError:
-            QMessageBox.warning(self, "Błąd", "Ocena musi być liczbą od 0 do 10")
-            return
-
-        movie = Movie(title, director, year, genre, status, rating, description)
-        self.user.movies.append(movie)
-        self.load_user_movies()
-        self.clear_form()
-        QMessageBox.information(self, "Sukces", f"Dodano film '{title}'")
-
-        self.user_manager.save_users()
-
-        self.update_stats()
+    # def add_movie(self):
+    #     title = self.title_input.text().strip()
+    #     director = self.director_input.text().strip()
+    #     year = self.year_input.text().strip()
+    #     genre = self.genre_input.text().strip()
+    #     status = self.status_input.currentText()
+    #     rating_text = self.rating_input.text().strip()
+    #     description = self.description_input.toPlainText().strip()
+    #
+    #     if not title or not director:
+    #         QMessageBox.warning(self, "Błąd", "Tytuł i reżyser są wymagane!")
+    #         return
+    #
+    #     try:
+    #         rating = float(rating_text) if rating_text else None
+    #         if rating is not None and not (0 <= rating <= 10):
+    #             raise ValueError()
+    #     except ValueError:
+    #         QMessageBox.warning(self, "Błąd", "Ocena musi być liczbą od 0 do 10")
+    #         return
+    #
+    #     movie = Movie(title, director, year, genre, status, rating, description)
+    #     self.user.movies.append(movie)
+    #     self.load_user_movies()
+    #     self.clear_form()
+    #     QMessageBox.information(self, "Sukces", f"Dodano film '{title}'")
+    #
+    #     self.user_manager.save_users()
+    #
+    #     self.update_stats()
 
     def clear_form(self):
         self.title_input.clear()
