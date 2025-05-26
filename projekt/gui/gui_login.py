@@ -7,9 +7,9 @@ from gui.gui_register import RegisterWindow
 
 
 class LoginWindow(QDialog):
-    def __init__(self, manager):
+    def __init__(self, user_manager):
         super().__init__()
-        self.manager = manager
+        self.user_manager = user_manager
         self.user = None
         self.register_window = None
         self.setWindowTitle("Logowanie")
@@ -19,7 +19,7 @@ class LoginWindow(QDialog):
 
         self.password_input = QLineEdit()
         self.password_input.setPlaceholderText("Hasło")
-        self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
+        self.password_input.setEchoMode(QLineEdit.Password)
 
         login_button = QPushButton("Zaloguj")
         login_button.clicked.connect(self.attempt_login)
@@ -38,23 +38,27 @@ class LoginWindow(QDialog):
         self.setLayout(layout)
 
     def attempt_login(self):
-        username = self.username_input.text()
-        password = self.password_input.text()
+        username = self.username_input.text().strip()
+        password = self.password_input.text().strip()
         try:
-            user = self.manager.authenticate_user(username, password)
+            user = self.user_manager.authenticate_user(username, password)
             self.user = user
+            # QMessageBox.information(self, "Sukces", f"Witaj, {username}!")
             self.accept()
         except (UserError, WrongStatus) as e:
             QMessageBox.critical(self, "Błąd logowania", str(e))
 
     def show_register_window(self):
-        if not self.register_window:
-            self.register_window = RegisterWindow(self.manager)
+        if self.register_window is None:
+            self.register_window = RegisterWindow(self.user_manager)
             self.register_window.registration_successful.connect(self.on_registration_successful)
         self.register_window.show()
+        self.register_window.raise_()
+        self.register_window.activateWindow()
 
     def on_registration_successful(self):
-        # Po pomyślnej rejestracji wpisz nazwę użytkownika w pole logowania
+        # Po pomyślnej rejestracji wstawiamy nazwę użytkownika do pola logowania
         self.username_input.setText(self.register_window.username_input.text())
+        self.password_input.clear()
         self.password_input.setFocus()
         QMessageBox.information(self, "Rejestracja zakończona", "Możesz się teraz zalogować.")

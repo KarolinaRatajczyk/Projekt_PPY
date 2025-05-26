@@ -138,29 +138,28 @@ class UserManager:
             user_data = []
             for user in self.users:
                 data = user.to_dict()
-                # Zamień datetime na string jeśli istnieją
-                if isinstance(data.get("created_at"), datetime):
-                    data["created_at"] = data["created_at"].strftime("%Y-%m-%d %H:%M:%S")
-                if isinstance(data.get("last_login"), datetime):
-                    data["last_login"] = data["last_login"].strftime("%Y-%m-%d %H:%M:%S")
+                # Zamiana datetime na string przy zapisie
+                for key in ["created_at", "last_login"]:
+                    if isinstance(data.get(key), datetime):
+                        data[key] = data[key].strftime("%Y-%m-%d %H:%M:%S")
                 user_data.append(data)
 
             with open(self.data_file, 'w', encoding='utf-8') as f:
                 json.dump(user_data, f, ensure_ascii=False, indent=2)
-
+            print(f"Zapisano {len(self.users)} użytkowników do pliku {self.data_file}")
         except Exception as e:
-            print(f"Nie udalo sie zapisac: {e}")
+            print(f"Nie udało się zapisać użytkowników: {e}")
 
     def load_users(self):
-
         try:
             if os.path.exists(self.data_file):
                 with open(self.data_file, 'r', encoding='utf-8') as f:
                     user_data = json.load(f)
                     self.users = [User.from_dict(data) for data in user_data]
-                    print(f"Wpisano {len(self.users)} uzytkownikow")
+                print(f"Wczytano {len(self.users)} użytkowników z pliku {self.data_file}")
             else:
-                print("Nie znaleziono user.data")
+                print(f"Plik {self.data_file} nie istnieje, tworzenie nowej listy użytkowników")
+                self.users = []
         except Exception as e:
-            print(f"error")
+            print(f"Błąd podczas wczytywania użytkowników: {e}")
             self.users = []

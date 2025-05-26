@@ -3,7 +3,6 @@ from PySide6.QtWidgets import (
     QWidget, QLineEdit, QPushButton,
     QVBoxLayout, QLabel, QMessageBox
 )
-
 from exceptions.exceptions import UserAlreadyExists
 
 
@@ -31,15 +30,17 @@ class RegisterWindow(QWidget):
         self.register_button.clicked.connect(self.register_user)
 
     def register_user(self):
-        username = self.username_input.text()
-        password = self.password_input.text()
+        username = self.username_input.text().strip()
+        password = self.password_input.text().strip()
+
         if not username or not password:
             QMessageBox.warning(self, "Błąd", "Wszystkie pola są wymagane.")
             return
+
         try:
             self.user_manager.register_user(username, password)
             QMessageBox.information(self, "Sukces", "Użytkownik zarejestrowany!")
-            self.registration_successful.emit()  # emitujemy sygnał
+            self.registration_successful.emit()  # emitujemy sygnał do LoginWindow
             self.close()
         except UserAlreadyExists:
             QMessageBox.warning(self, "Błąd", "Użytkownik już istnieje.")

@@ -2,13 +2,15 @@ import json
 from PySide6.QtWidgets import (
     QWidget, QListWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QLineEdit, QTextEdit, QFormLayout, QMessageBox,
-    QComboBox, QTabWidget
+    QComboBox, QTabWidget, QScrollArea
 )
 
 from pathlib import Path
 
 from managers.movieManager import MovieManager
 from models.movie import Movie
+from utils.statistics import Statistics
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 
 class MainAppWindow(QWidget):
@@ -183,3 +185,28 @@ class MainAppWindow(QWidget):
         self.load_user_movies()
         self.sample_comment.clear()
         QMessageBox.information(self, "Dodano", f"Film '{movie.title}' został dodany.")
+
+
+    def init_stats_tab(self):
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        content_widget = QWidget()
+        content_layout = QVBoxLayout(content_widget)
+
+        fig1 = Statistics.plot_ratings_per_movie(self.user)
+        canvas1 = FigureCanvas(fig1)
+        content_layout.addWidget(canvas1)
+
+        fig2 = Statistics.plot_movies_by_genre(self.user)
+        canvas2 = FigureCanvas(fig2)
+        content_layout.addWidget(canvas2)
+
+        fig3 = Statistics.plot_average_rating(self.user)
+        canvas3 = FigureCanvas(fig3)
+        content_layout.addWidget(canvas3)
+
+        scroll.setWidget(content_widget)
+
+        layout = QVBoxLayout()
+        layout.addWidget(scroll)
+        self.stats_tab.setLayout(layout)
