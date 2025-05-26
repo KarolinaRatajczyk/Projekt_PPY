@@ -113,10 +113,10 @@ class MovieManager:
 
 
     def get_watched_history(self):
-        return [(m.title, m.watch_date) for m in self.movies if m.status == 'obejrzany']
+        return [(m.title, m.watch_date) for m in self.movies if m.status == 'watched']
 
     def set_status(self, id, status):
-        valid_statuses = ["obejrzany", "nieobejrzany"]
+        valid_statuses = ["watched", "unwatched"]
 
         if status not in valid_statuses:
             raise WrongStatus(f"Zly status '{status}'. Musi byc 'obejrzany' lub 'nieobejrzany'")
