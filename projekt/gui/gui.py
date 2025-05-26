@@ -2,7 +2,7 @@ import json
 from PySide6.QtWidgets import (
     QWidget, QListWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QLineEdit, QTextEdit, QFormLayout, QMessageBox,
-    QComboBox, QTabWidget, QScrollArea
+    QComboBox, QTabWidget, QScrollArea, QGroupBox
 )
 
 from pathlib import Path
@@ -49,15 +49,56 @@ class MainAppWindow(QWidget):
 
         self.movie_list = QListWidget()
         self.movie_list.itemClicked.connect(self.show_movie_details)
+        self.movie_list.setStyleSheet("""
+        QListWidget {
+            font-size: 13px;
+            padding: 5px;
+        }
+        """)
+
         layout.addWidget(self.movie_list, 1)
 
         right_layout = QVBoxLayout()
+        self.details_box = QGroupBox("Sczegóły filmu")
+        self.details_box.setStyleSheet("""
+                QGroupBox {
+                    font-weight: bold;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    margin-top: 10px;
+                }
+                QGroupBox::title {
+                    subcontrol-origin: margin;
+                    left: 10px;
+                    padding: 0 3px 0 3px;
+                }
+        """)
+
         self.details_label = QLabel("Wybierz film z listy")
         self.details_label.setWordWrap(True)
-        right_layout.addWidget(self.details_label, 2)
+
+        details_layout = QVBoxLayout()
+        details_layout.addWidget(self.details_label)
+        self.details_box.setLayout(details_layout)
+        right_layout.addWidget(self.details_box)
+
 
         self.add_film_button = QPushButton("➕ Dodaj film ręcznie")
         self.add_film_button.clicked.connect(self.open_add_movie_dialog)
+        self.add_film_button.setStyleSheet("""
+                QPushButton {
+                    background-color: #4CAF50;
+                    color: white;
+                    font-weight: bold;
+                    border: none;
+                    padding: 10px;
+                    border-radius: 5px;
+                }
+                QPushButton:hover {
+                    background-color: #45a049;
+                }
+        """)
+
         right_layout.addWidget(self.add_film_button)
 
         layout.addLayout(right_layout, 2)
