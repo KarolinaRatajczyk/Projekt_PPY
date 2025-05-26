@@ -1,4 +1,6 @@
 import json
+from datetime import date
+
 from PySide6.QtWidgets import (
     QWidget, QListWidget, QVBoxLayout, QHBoxLayout, QLabel,
     QPushButton, QLineEdit, QTextEdit, QFormLayout, QMessageBox,
@@ -44,21 +46,31 @@ class MainAppWindow(QWidget):
 
     # === Moje filmy ===
     def init_user_tab(self):
-        layout = QHBoxLayout()
-        self.user_tab.setLayout(layout)
+        main_layout = QHBoxLayout()
+        self.user_tab.setLayout(main_layout)
+
+        left_column = QVBoxLayout()
+
+        self.search_input_user = QLineEdit()
+        self.search_input_user.setPlaceholderText("Szukaj w mojej kolekcji...")
+        self.search_input_user.textChanged.connect(self.search_user_movies)
+        left_column.addWidget(self.search_input_user)
 
         self.movie_list = QListWidget()
         self.movie_list.itemClicked.connect(self.show_movie_details)
         self.movie_list.setStyleSheet("""
-        QListWidget {
-            font-size: 13px;
-            padding: 5px;
-        }
+            QListWidget {
+                font-size: 13px;
+                padding: 5px;
+            }
         """)
 
-        layout.addWidget(self.movie_list, 1)
+        left_column.addWidget(self.movie_list)
+
+        main_layout.addLayout(left_column, 1)
 
         right_layout = QVBoxLayout()
+
         self.details_box = QGroupBox("Sczegóły filmu")
         self.details_box.setStyleSheet("""
                 QGroupBox {
@@ -81,7 +93,6 @@ class MainAppWindow(QWidget):
         details_layout.addWidget(self.details_label)
         self.details_box.setLayout(details_layout)
         right_layout.addWidget(self.details_box)
-
 
         self.add_film_button = QPushButton("➕ Dodaj film ręcznie")
         self.add_film_button.clicked.connect(self.open_add_movie_dialog)
@@ -119,7 +130,6 @@ class MainAppWindow(QWidget):
         right_layout.addWidget(self.edit_film_button)
 
 
-
         self.delete_film_button = QPushButton("🗑️ Usuń film")
         self.delete_film_button.clicked.connect(self.delete_selected_movie)
         self.delete_film_button.setStyleSheet("""
@@ -137,8 +147,16 @@ class MainAppWindow(QWidget):
         """)
         right_layout.addWidget(self.delete_film_button)
 
-        layout.addLayout(right_layout, 2)
+        main_layout.addLayout(right_layout, 2)
         self.load_user_movies()
+
+    def search_user_movies(self, text):
+        text = text.strip().lower()
+        self.movie_list.clear()
+
+        for movie in self.user.movies:
+            if text in movie.title.lower():
+                self.movie_list.addItem(f"{movie.title} ({movie.year})")
 
     def load_user_movies(self):
         self.movie_list.clear()
@@ -148,6 +166,11 @@ class MainAppWindow(QWidget):
     def show_movie_details(self, item):
         index = self.movie_list.row(item)
         movie = self.user.movies[index]
+
+        # ✅ Zmieniono: movie['status'] → movie.status
+        if movie.status.lower() == "watched":
+            pass  # jeśli chcesz coś dodać, możesz tutaj
+
         text = (
             f"<h3 style='margin-bottom: 10px;'>{movie.title} ({movie.year})</h3>"
             f"<div style='font-size: 13px;'>"
@@ -192,12 +215,52 @@ class MainAppWindow(QWidget):
             self.update_stats()
 
     # === Lista gotowych filmów ===
+    # def init_sample_tab(self):
+    #     layout = QHBoxLayout()
+    #     self.sample_tab.setLayout(layout)
+    #
+    #     # Lewa strona: lista filmów
+    #     left_layout = QVBoxLayout()
+    #     self.sample_list = QListWidget()
+    #     self.sample_list.itemClicked.connect(self.show_sample_movie_details)
+    #     left_layout.addWidget(QLabel("📽️ Filmy z bazy:"))
+    #     left_layout.addWidget(self.sample_list)
+    #
+    #     layout.addLayout(left_layout, 1)
+    #
+    #     # Prawa strona: szczegóły i komentarze
+    #     self.sample_details_box = QGroupBox("📄 Szczegóły filmu")
+    #     self.sample_details_layout = QVBoxLayout()
+    #     self.sample_details_label = QLabel("Wybierz film z lewej strony.")
+    #     self.sample_details_label.setWordWrap(True)
+    #     self.sample_details_layout.addWidget(self.sample_details_label)
+    #
+    #     self.sample_comment_edit = QTextEdit()
+    #     self.sample_comment_edit.setPlaceholderText("Dodaj swój komentarz...")
+    #     self.sample_details_layout.addWidget(self.sample_comment_edit)
+    #
+    #     self.add_sample_button = QPushButton("➕ Dodaj film do moich")
+    #     self.add_sample_button.clicked.connect(self.add_selected_sample)
+    #     self.sample_details_layout.addWidget(self.add_sample_button)
+    #
+    #     self.sample_details_box.setLayout(self.sample_details_layout)
+    #     layout.addWidget(self.sample_details_box, 2)
+    #
+    #     # Wczytaj filmy z JSON
+    #     base_dir = Path(__file__).resolve().parent.parent
+    #     self.sample_file = base_dir / "data" / "sample_movies.json"
+    #     with self.sample_file.open("r", encoding="utf-8") as f:
+    #         self.sample_movies = json.load(f)
+    #
+    #     for movie in self.sample_movies:
+    #         self.sample_list.addItem(f"{movie['title']} ({movie['year']})")
     def init_sample_tab(self):
         layout = QVBoxLayout()
         self.sample_tab.setLayout(layout)
 
         self.sample_list = QListWidget()
         layout.addWidget(self.sample_list)
+
         self.sample_comment = QTextEdit()
         self.sample_comment.setPlaceholderText("Dodaj komentarz (opcjonalnie)")
         layout.addWidget(self.sample_comment)
@@ -210,10 +273,46 @@ class MainAppWindow(QWidget):
         json_file = base_dir / "data" / "sample_movies.json"
 
         with json_file.open("r", encoding="utf-8") as f:
-            self.sample_movies = json.load(f)
+            self.sample_movies = json.load(f)  # lista słowników, nie obiektów Movie
 
-        for m in self.sample_movies:
-            self.sample_list.addItem(f"{m['title']} ({m['year']})")
+        for movie in self.sample_movies:
+            self.sample_list.addItem(f"{movie['title']} ({movie['year']})")
+
+    def show_sample_movie_details(self, item):
+        index = self.sample_list.row(item)
+        movie = self.sample_movies[index]
+
+        text = (
+            f"<h3>{movie['title']} ({movie['year']})</h3>"
+            f"<b>Reżyser:</b> {movie['director']}<br>"
+            f"<b>Gatunek:</b> {movie['genre']}<br>"
+            f"<b>Ocena:</b> {movie['rating']}<br>"
+            f"<b>Opis:</b> {movie['description']}<br>"
+            f"<b>Data obejrzenia:</b> {movie.get('watch_date', 'Brak')}<br><br>"
+            f"<b>Komentarze użytkowników:</b><br>"
+        )
+
+        comments = movie.get("comments", [])
+        if comments:
+            text += "<ul style='padding-left: 15px;'>"
+            for c in comments:
+                user = c.get("user", "Nieznany")
+                date = c.get("date", "Brak daty")
+                comment = c.get("comment", "")
+                text += f"<li><b>{user}</b> ({date}): {comment}</li>"
+            text += "</ul>"
+        else:
+            text += "<i>Brak komentarzy.</i>"
+
+        self.sample_details_label.setText(text)
+
+    def search_sample_movies(self, text):
+        text = text.strip().lower()
+        self.sample_list.clear()
+
+        for movie in self.sample_movies:
+            if text in movie["title"].lower():
+                self.sample_list.addItem(f"{movie['title']} ({movie['year']})")
 
     def add_selected_sample(self):
         index = self.sample_list.currentRow()
@@ -222,6 +321,24 @@ class MainAppWindow(QWidget):
             return
 
         movie_data = self.sample_movies[index]
+
+        # Dodaj komentarz użytkownika do JSON-a
+        comment_text = self.sample_comment_edit.toPlainText().strip()
+        if comment_text:
+            comment_entry = {
+                "user": self.user.username,
+                "comment": comment_text,
+                "date": str(date.today())
+            }
+            movie_data.setdefault("comments", []).append(comment_entry)
+
+            # Zapisz komentarz do pliku JSON
+            with self.sample_file.open("w", encoding="utf-8") as f:
+                json.dump(self.sample_movies, f, indent=2, ensure_ascii=False)
+
+        # Dodaj film do listy użytkownika
+        from models.movie import Movie
+
         movie = Movie(
             title=movie_data["title"],
             director=movie_data["director"],
@@ -229,18 +346,17 @@ class MainAppWindow(QWidget):
             genre=movie_data["genre"],
             status=movie_data["status"],
             rating=movie_data["rating"],
-            description=self.sample_comment.toPlainText() or movie_data["description"]
+            description=movie_data["description"],
+            watch_date=movie_data.get("watch_date")
         )
-        setattr(movie, "watch_date", movie_data.get("watched_date"))
+        movie.comments = movie_data.get("comments", [])
 
         self.user.movies.append(movie)
-        self.load_user_movies()
-        self.sample_comment.clear()
-        QMessageBox.information(self, "Dodano", f"Film '{movie.title}' został dodany.")
-
         self.user_manager.save_users()
+        self.load_user_movies()
 
-        self.update_stats()
+        QMessageBox.information(self, "Dodano", f"Film '{movie.title}' został dodany do Twojej listy.")
+        self.sample_comment_edit.clear()
 
     def init_stats_tab(self):
         self.stats_tab_layout = QVBoxLayout()

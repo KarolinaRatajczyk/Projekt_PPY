@@ -6,6 +6,7 @@ class EditMovieWindow(QDialog):
     def __init__(self, parent, movie: Movie):
         super().__init__(parent)
         self.setWindowTitle("Edytuj film")
+        self.movie = movie
         self.original_id = movie.id
 
         layout = QVBoxLayout()
@@ -16,7 +17,7 @@ class EditMovieWindow(QDialog):
         self.year_input = QLineEdit(str(movie.year))
         self.genre_input = QLineEdit(movie.genre)
         self.status_input = QComboBox()
-        self.status_input.addItems(["obejrzany", "do obejrzenia"])
+        self.status_input.addItems(["Watched", "Unwatched"])
         self.status_input.setCurrentText(movie.status)
         self.rating_input = QLineEdit(str(movie.rating) if movie.rating is not None else "")
         self.description_input = QTextEdit(movie.description)
@@ -28,6 +29,8 @@ class EditMovieWindow(QDialog):
         form.addRow("Status:", self.status_input)
         form.addRow("Ocena (0-10):", self.rating_input)
         form.addRow("Opis:", self.description_input)
+
+        layout.addLayout(form)
 
         self.save_button = QPushButton("Zapisz zmiany")
         self.save_button.clicked.connect(self.validate_and_accept)

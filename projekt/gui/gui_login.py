@@ -85,7 +85,7 @@ class LoginWindow(QDialog):
 
         try:
             self.user_manager.register_user(username, password)
-            QMessageBox.information(self, "Sukces", "Użytkownik zarejestrowany!")
+            # QMessageBox.information(self, "Sukces", "Użytkownik zarejestrowany!")
             self.register_username.clear()
             self.register_password.clear()
             self.toggle_register_area()

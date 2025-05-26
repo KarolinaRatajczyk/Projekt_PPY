@@ -1,24 +1,25 @@
-import json
-
+from datetime import date
 from exceptions.exceptions import DuplicateMovieError, EmptyMovieListError, NotSuchAnId, WrongStatus
 
 
 class MovieManager:
 
-
     def __init__(self):
-        self.movies = []  # -> inicjalizujemy pusty array
+        self.movies = []
 
     def add_movie(self, movie):
         for m in self.movies:
-            if m.title.lower() == movie.title.lower():
-                raise DuplicateMovieError(f"Film '{movie.title}' już istnieje!")
+            if m.title.lower() == movie.title.lower() and m.user == movie.user:
+                raise DuplicateMovieError(f"Film '{movie.title}' już istnieje u użytkownika '{movie.user}'!")
+
+        movie.status = "Nieobejrzany"
+        movie.watch_date = None
+        movie.rating = None
         self.movies.append(movie)
 
     def get_movies(self):
         if not self.movies:
-            raise EmptyMovieListError("Lista filmow pusta")
-
+            raise EmptyMovieListError("Lista filmów pusta")
         return self.movies
 
     def get_movie_by_id(self, id):
@@ -55,6 +56,13 @@ class MovieManager:
                 return
         raise NotSuchAnId(f"Brak filmu o ID: {id} (próba aktualizacji gatunku)")
 
+    def update_description(self, id, new_description):
+        for movie in self.movies:
+            if movie.id == id:
+                movie.description = new_description
+                return
+        raise NotSuchAnId(f"Brak filmu o ID: {id} (próba aktualizacji opisu)")
+
     def update_rating(self, id, new_rating):
         for movie in self.movies:
             if movie.id == id:
@@ -69,59 +77,48 @@ class MovieManager:
                 return
         raise NotSuchAnId(f"Brak filmu o ID: {id} (próba aktualizacji daty obejrzenia)")
 
-    def update_description(self, id, new_description):
-        for movie in self.movies:
-            if movie.id == id:
-                movie.description = new_description
-                return
-        raise NotSuchAnId(f"Brak filmu o ID: {id} (próba aktualizacji opisu)")
-
     def find_movie_by_title(self, title):
-        for movie in self.movies:
-            if movie.title == title:
-                return movie
-
+        return [movie for movie in self.movies if movie.title.lower() == title.lower()]
 
     def find_movie_by_director(self, director):
-        for movie in self.movies:
-            if movie.director == director:
-                return movie
-
+        return [movie for movie in self.movies if movie.director.lower() == director.lower()]
 
     def filter_movies_by_genre(self, genre):
-        movies = []
-        for movie in self.movies:
-            if genre in movie.genre:
-                movies.append(movie)
-        return movies
+        return [movie for movie in self.movies if genre.lower() in movie.genre.lower()]
 
     def add_comment_to_movie(self, title, user, comment):
-        movie = self.find_movie_by_title(title)
-        if not movie:
-            raise NotSuchAnId("Nie znaleziono filmu o podanym tytule")
-        movie.add_comment(user, comment)
-
+        for movie in self.movies:
+            if movie.title.lower() == title.lower():
+                movie.add_comment(user, comment)
+                return
+        raise NotSuchAnId("Nie znaleziono filmu o podanym tytule")
 
     def sort_movies_by_rating(self):
-        return sorted(self.movies, key=lambda movie: movie.rating, reverse=True) ## DO WYTLUMACZENIA
-
+        return sorted(self.movies, key=lambda movie: (movie.rating is not None, movie.rating), reverse=True)
 
     def sort_movies_by_title(self):
-        return sorted(self.movies, key=lambda movie: movie.title)    ## DO WYTLUMACZENIA
-
+        return sorted(self.movies, key=lambda movie: movie.title)
 
     def get_watched_history(self):
-        return [(m.title, m.watch_date) for m in self.movies if m.status == 'watched']
+        return [(m.title, m.watch_date) for m in self.movies if m.status == "Obejrzany"]
 
-    def set_status(self, id, status):
-        valid_statuses = ["watched", "unwatched"]
+    def set_status(self, id, status, rating=None):
+        valid_statuses = ["Obejrzany", "Nieobejrzany"]
 
         if status not in valid_statuses:
-            raise WrongStatus(f"Zly status '{status}'. Musi byc 'obejrzany' lub 'nieobejrzany'")
+            raise WrongStatus(f"Zły status '{status}'. Dozwolone: 'Obejrzany', 'Nieobejrzany'.")
 
         for movie in self.movies:
             if movie.id == id:
                 movie.status = status
+                if status == "Obejrzany":
+                    movie.watch_date = date.today().isoformat()
+                    if rating is None:
+                        raise ValueError("Ocena musi być podana przy oznaczeniu filmu jako 'Obejrzany'.")
+                    movie.rating = rating
+                else:
+                    movie.watch_date = None
+                    movie.rating = None
                 return
 
         raise NotSuchAnId(f"Brak filmu o id: {id}")
@@ -130,6 +127,7 @@ class MovieManager:
         if not self.movies:
             print("Brak filmów w kolekcji")
             return
+
         for movie in self.movies:
             print(movie)
             if movie.comments:
@@ -137,5 +135,3 @@ class MovieManager:
                 for c in movie.comments:
                     print(f"    {c['user']}: {c['comment']}")
             print()
-
-
