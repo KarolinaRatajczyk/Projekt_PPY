@@ -129,8 +129,10 @@ class MainAppWindow(QWidget):
         self.load_user_movies()
         self.clear_form()
         QMessageBox.information(self, "Sukces", f"Dodano film '{title}'")
-        self.update_stats()
+
         self.user_manager.save_users()
+
+        self.update_stats()
 
     def clear_form(self):
         self.title_input.clear()
@@ -190,30 +192,37 @@ class MainAppWindow(QWidget):
 
         self.user_manager.save_users()
 
+        self.update_stats()
+
     def init_stats_tab(self):
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
-        content_widget = QWidget()
-        content_layout = QVBoxLayout(content_widget)
+        self.content_widget = QWidget()
+        self.content_layout = QVBoxLayout(self.content_widget)
 
-        fig1 = Statistics.plot_ratings_per_movie(self.user)
-        canvas1 = FigureCanvas(fig1)
-        content_layout.addWidget(canvas1)
+        self.canvas_ratings = FigureCanvas(Statistics.plot_ratings_per_movie(self.user))
+        self.canvas_genre = FigureCanvas(Statistics.plot_movies_by_genre(self.user))
+        self.canvas_avg = FigureCanvas(Statistics.plot_average_rating(self.user))
+        self.canvas_best = FigureCanvas(Statistics.plot_top_rated_movie(self.user))
 
-        fig2 = Statistics.plot_movies_by_genre(self.user)
-        canvas2 = FigureCanvas(fig2)
-        content_layout.addWidget(canvas2)
+        self.content_layout.addWidget(self.canvas_ratings)
+        self.content_layout.addWidget(self.canvas_avg)
+        self.content_layout.addWidget(self.canvas_genre)
+        self.content_layout.addWidget(self.canvas_best)
 
-        fig3 = Statistics.plot_average_rating(self.user)
-        canvas3 = FigureCanvas(fig3)
-        content_layout.addWidget(canvas3)
-
-        scroll.setWidget(content_widget)
+        scroll.setWidget(self.content_widget)
 
         layout = QVBoxLayout()
         layout.addWidget(scroll)
         self.stats_tab.setLayout(layout)
 
     def update_stats(self):
-        pass
+        self.canvas_avg.figure = Statistics.plot_average_rating(self.user)
+        self.canvas_avg.draw()
+
+        self.canvas_genre.figure = Statistics.plot_movies_by_genre(self.user)
+        self.canvas_genre.draw()
+
+        self.canvas_best.figure = Statistics.plot_top_rated_movie(self.user)
+        self.canvas_best.draw()
 

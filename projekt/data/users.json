@@ -5,7 +5,7 @@
     "password": "admin123",
     "email": "",
     "created_at": "2025-05-25 18:13:15.684876",
-    "last_login": "2025-05-26 13:47:34",
+    "last_login": "2025-05-26 14:59:09",
     "movies": [
       {
         "id": "ed151ae5-4c05-488b-848f-68a8ff9793dc",
@@ -41,6 +41,42 @@
         "rating": 9.0,
         "description": "A hacker discovers reality is a simulation.",
         "watch_date": "2023-06-15",
+        "comments": []
+      },
+      {
+        "id": "d5f5e187-2bc4-4f98-bdd3-f7b987fe1c7f",
+        "title": "The Grand Budapest Hotel",
+        "director": "Wes Anderson",
+        "year": 2014,
+        "genre": "Comedy",
+        "status": "Unwatched",
+        "rating": null,
+        "description": "A hotel concierge is framed for murder.",
+        "watch_date": null,
+        "comments": []
+      },
+      {
+        "id": "933b2b51-a837-4f02-a21c-cab6f3dfb696",
+        "title": "Pulp Fiction",
+        "director": "Quentin Tarantino",
+        "year": 1994,
+        "genre": "Crime",
+        "status": "Watched",
+        "rating": 8.9,
+        "description": "The lives of two mob hitmen intertwine in a series of incidents.",
+        "watch_date": "2023-07-10",
+        "comments": []
+      },
+      {
+        "id": "8a90411a-0a32-4255-b8c1-6938c58a4e39",
+        "title": "Parasite",
+        "director": "Bong Joon-ho",
+        "year": 2019,
+        "genre": "Thriller",
+        "status": "Unwatched",
+        "rating": null,
+        "description": "A poor family schemes to become employed by a wealthy household.",
+        "watch_date": null,
         "comments": []
       }
     ]

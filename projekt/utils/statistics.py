@@ -24,7 +24,7 @@ class Statistics:
 
     @staticmethod
     def plot_movies_by_genre(user):
-        fig = Figure(figsize=(6, 3))
+        fig = Figure(figsize=(5, 5))
         ax = fig.add_subplot(111)
 
         genres = {}
@@ -34,11 +34,18 @@ class Statistics:
                 genres[genre] = genres.get(genre, 0) + 1
 
         if genres:
-            ax.bar(genres.keys(), genres.values(), color='orange')
-            ax.set_title("Liczba filmów według gatunku")
-            ax.set_ylabel("Liczba filmów")
-            ax.set_xticks(range(len(genres)))
-            ax.set_xticklabels(genres.keys(), rotation=45, ha='right')
+            labels = list(genres.keys())
+            sizes = list(genres.values())
+
+            ax.pie(
+                sizes,
+                labels=labels,
+                autopct="%1.1f%%",
+                startangle=90,
+                wedgeprops={'edgecolor': 'black'}
+            )
+            ax.set_title("Rozkład filmów według gatunku")
+            ax.axis("equal")  # Koło zamiast elipsy
         else:
             ax.text(0.5, 0.5, "Brak danych o gatunkach", ha='center', va='center')
 
@@ -55,6 +62,23 @@ class Statistics:
             ax.bar(["Średnia"], [avg], color='green')
             ax.set_title("Średnia ocena wszystkich filmów")
             ax.set_ylim(0, 10)
+            ax.set_ylabel("Ocena")
+        else:
+            ax.text(0.5, 0.5, "Brak ocenionych filmów", ha='center', va='center')
+
+        return fig
+
+    @staticmethod
+    def plot_top_rated_movie(user):
+        fig = Figure(figsize=(5, 3))
+        ax = fig.add_subplot(111)
+
+        rated_movies = [m for m in user.movies if m.rating is not None]
+        if rated_movies:
+            top_movie = max(rated_movies, key=lambda m: m.rating)
+            ax.bar([top_movie.title], [top_movie.rating], color='purple')
+            ax.set_ylim(0, 10)
+            ax.set_title("Najlepiej oceniany film")
             ax.set_ylabel("Ocena")
         else:
             ax.text(0.5, 0.5, "Brak ocenionych filmów", ha='center', va='center')
