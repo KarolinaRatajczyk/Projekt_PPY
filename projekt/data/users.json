@@ -5,7 +5,7 @@
     "password": "admin123",
     "email": "",
     "created_at": "2025-05-25 18:13:15.684876",
-    "last_login": "2025-05-26 14:59:09",
+    "last_login": "2025-05-26 15:39:42",
     "movies": [
       {
         "id": "ed151ae5-4c05-488b-848f-68a8ff9793dc",
@@ -52,7 +52,7 @@
         "status": "Unwatched",
         "rating": null,
         "description": "A hotel concierge is framed for murder.",
-        "watch_date": null,
+        "watch_date": "",
         "comments": []
       },
       {
@@ -76,6 +76,30 @@
         "status": "Unwatched",
         "rating": null,
         "description": "A poor family schemes to become employed by a wealthy household.",
+        "watch_date": "",
+        "comments": []
+      },
+      {
+        "id": "ee4203e2-bd4d-48b6-8de9-70f77ad31ba7",
+        "title": "Arrival",
+        "director": "Denis Villeneuve",
+        "year": 2016,
+        "genre": "Sci-Fi",
+        "status": "Watched",
+        "rating": 8.0,
+        "description": "A linguist tries to communicate with aliens.",
+        "watch_date": "2023-08-21",
+        "comments": []
+      },
+      {
+        "id": "d822466d-1bd8-42be-abf4-5da5bd9a874d",
+        "title": "Spirited Away",
+        "director": "Hayao Miyazaki",
+        "year": 2001,
+        "genre": "Animation",
+        "status": "Unwatched",
+        "rating": null,
+        "description": "komenatrz testowy",
         "watch_date": null,
         "comments": []
       }

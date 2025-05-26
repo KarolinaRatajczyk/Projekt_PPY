@@ -195,34 +195,57 @@ class MainAppWindow(QWidget):
         self.update_stats()
 
     def init_stats_tab(self):
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        self.content_widget = QWidget()
-        self.content_layout = QVBoxLayout(self.content_widget)
+        self.stats_tab_layout = QVBoxLayout()
+        self.stats_tabs = QTabWidget()
+        self.stats_tab.setLayout(self.stats_tab_layout)
+        self.stats_tab_layout.addWidget(self.stats_tabs)
 
+        self.ratings_widget = QWidget()
+        self.ratings_layout = QVBoxLayout(self.ratings_widget)
         self.canvas_ratings = FigureCanvas(Statistics.plot_ratings_per_movie(self.user))
+        self.ratings_layout.addWidget(self.canvas_ratings)
+        self.stats_tabs.addTab(self.ratings_widget, "Oceny filmów")
+
+        self.genre_widget = QWidget()
+        self.genre_layout = QVBoxLayout(self.genre_widget)
         self.canvas_genre = FigureCanvas(Statistics.plot_movies_by_genre(self.user))
+        self.genre_layout.addWidget(self.canvas_genre)
+        self.stats_tabs.addTab(self.genre_widget, "Gatunki")
+
+        self.avg_widget = QWidget()
+        self.avg_layout = QVBoxLayout(self.avg_widget)
         self.canvas_avg = FigureCanvas(Statistics.plot_average_rating(self.user))
+        self.avg_layout.addWidget(self.canvas_avg)
+        self.stats_tabs.addTab(self.avg_widget, "Średnia")
+
+        self.best_widget = QWidget()
+        self.best_layout = QVBoxLayout(self.best_widget)
         self.canvas_best = FigureCanvas(Statistics.plot_top_rated_movie(self.user))
+        self.best_layout.addWidget(self.canvas_best)
+        self.stats_tabs.addTab(self.best_widget, "Najlepszy film")
 
-        self.content_layout.addWidget(self.canvas_ratings)
-        self.content_layout.addWidget(self.canvas_avg)
-        self.content_layout.addWidget(self.canvas_genre)
-        self.content_layout.addWidget(self.canvas_best)
 
-        scroll.setWidget(self.content_widget)
-
-        layout = QVBoxLayout()
-        layout.addWidget(scroll)
-        self.stats_tab.setLayout(layout)
 
     def update_stats(self):
-        self.canvas_avg.figure = Statistics.plot_average_rating(self.user)
-        self.canvas_avg.draw()
+        self.canvas_ratings.figure = Statistics.plot_ratings_per_movie(self.user)
+        self.canvas_ratings.draw()
 
         self.canvas_genre.figure = Statistics.plot_movies_by_genre(self.user)
         self.canvas_genre.draw()
 
+        self.canvas_avg.figure = Statistics.plot_average_rating(self.user)
+        self.canvas_avg.draw()
+
         self.canvas_best.figure = Statistics.plot_top_rated_movie(self.user)
         self.canvas_best.draw()
+
+
+        avg = Statistics.get_average_rating(self.user)
+        top = Statistics.get_top_rated_movie(self.user)
+
+        if avg is not None and top is not None:
+            summary = f"Średnia ocena: {avg:.2f}   |   Najlepszy film: {top.title} ({top.rating}/10)"
+        else:
+            summary = "Brak wystarczających danych do podsumowania"
+
 
