@@ -22,3 +22,13 @@ class UserError(Exception):
     "when user error"
     pass
 
+
+class UserAlreadyExists(Exception):
+    "User already exists"
+    pass
+
+
+
+class IncorrectPassword:
+    "Incorrect password"
+    pass
