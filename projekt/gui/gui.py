@@ -56,6 +56,16 @@ class MainAppWindow(QWidget):
         self.search_input_user.textChanged.connect(self.search_user_movies)
         left_column.addWidget(self.search_input_user)
 
+
+        # ZMIENIONE SORTOWANIE
+        self.sort_combo_user = QComboBox()
+        self.sort_combo_user.addItems(
+            ["Sortuj wg: Tytuł A-Z", "Tytuł Z-A", "Rok (rosnąco)", "Rok (malejąco)", "Ocena (rosnąco)",
+             "Ocena (malejąco)"])
+        self.sort_combo_user.currentIndexChanged.connect(self.sort_user_movies)
+        left_column.addWidget(self.sort_combo_user)
+        # --------------------
+
         self.movie_list = QListWidget()
         self.movie_list.itemClicked.connect(self.show_movie_details)
         self.movie_list.setStyleSheet("""
@@ -214,31 +224,44 @@ class MainAppWindow(QWidget):
             self.load_user_movies()
             self.update_stats()
 
-    def init_sample_tab(self):
-        layout = QVBoxLayout()
-        self.sample_tab.setLayout(layout)
 
-        # 🔍 Pasek wyszukiwania
+    def init_sample_tab(self):
+        main_layout = QVBoxLayout()
+        self.sample_tab.setLayout(main_layout)
+
         self.search_input_sample = QLineEdit()
         self.search_input_sample.setPlaceholderText("Szukaj w bazie filmów...")
         self.search_input_sample.textChanged.connect(self.search_sample_movies)
-        layout.addWidget(self.search_input_sample)
+        main_layout.addWidget(self.search_input_sample)
+
+        content_layout = QHBoxLayout()
+        main_layout.addLayout(content_layout)
 
         self.sample_list = QListWidget()
         self.sample_list.itemClicked.connect(self.show_sample_movie_details)
-        layout.addWidget(self.sample_list)
+        content_layout.addWidget(self.sample_list, 1)
+
+        right_panel = QVBoxLayout()
 
         self.sample_details_label = QLabel("Wybierz film z listy, by zobaczyć szczegóły.")
         self.sample_details_label.setWordWrap(True)
-        layout.addWidget(self.sample_details_label)
+        right_panel.addWidget(self.sample_details_label)
 
         self.sample_comment_edit = QTextEdit()
-        self.sample_comment_edit.setPlaceholderText("Dodaj komentarz (opcjonalnie)")
-        layout.addWidget(self.sample_comment_edit)
+        self.add_comment_button = QPushButton("💬 Dodaj komentarz")
+        self.add_comment_button.clicked.connect(self.add_sample_comment)
+        right_panel.addWidget(self.add_comment_button)
+
+        # self.sample_comment_edit.setPlaceholderText("Dodaj komentarz (opcjonalnie)")
+        # right_panel.addWidget(self.sample_comment_edit)
+
+
 
         self.add_sample_button = QPushButton("Dodaj wybrany film do moich")
         self.add_sample_button.clicked.connect(self.add_selected_sample)
-        layout.addWidget(self.add_sample_button)
+        right_panel.addWidget(self.add_sample_button)
+
+        content_layout.addLayout(right_panel, 2)
 
         base_dir = Path(__file__).resolve().parent.parent
         self.sample_file = base_dir / "data" / "sample_movies.json"
@@ -293,6 +316,11 @@ class MainAppWindow(QWidget):
 
         movie_data = self.sample_movies[index]
 
+        if any(m.title == movie_data["title"] and m.year == movie_data["year"] for m in self.user.movies):
+            QMessageBox.information(self, "Uwaga", "Ten film już znajduje się na Twojej liście!")
+            return
+
+
         # Dodaj komentarz użytkownika do JSON-a
         comment_text = self.sample_comment_edit.toPlainText().strip()
         if comment_text:
@@ -328,6 +356,8 @@ class MainAppWindow(QWidget):
 
         QMessageBox.information(self, "Dodano", f"Film '{movie.title}' został dodany do Twojej listy.")
         self.sample_comment_edit.clear()
+
+        self.update_stats()
 
     def init_stats_tab(self):
         self.stats_tab_layout = QVBoxLayout()
@@ -404,3 +434,54 @@ class MainAppWindow(QWidget):
             self.load_user_movies()
             self.details_label.setText("Wybierz film z listy")
             self.update_stats()
+
+    def add_sample_comment(self):
+        index = self.sample_list.currentRow()
+        if index == -1:
+            QMessageBox.warning(self, "Błąd", "Wybierz film, do którego chcesz dodać komentarz.")
+            return
+
+        comment_text = self.sample_comment_edit.toPlainText().strip()
+        if not comment_text:
+            QMessageBox.warning(self, "Błąd", "Komentarz nie może być pusty.")
+            return
+
+        movie_data = self.sample_movies[index]
+        comment_entry = {
+            "user": self.user.username,
+            "comment": comment_text,
+            "date": str(date.today())
+        }
+
+        movie_data.setdefault("comments", []).append(comment_entry)
+
+        # Zapisz do pliku
+        with self.sample_file.open("w", encoding="utf-8") as f:
+            json.dump(self.sample_movies, f, indent=2, ensure_ascii=False)
+
+        # Wyczyszczenie pola i odświeżenie widoku
+        self.sample_comment_edit.clear()
+        self.show_sample_movie_details(self.sample_list.item(index))
+        QMessageBox.information(self, "Sukces", "Komentarz został dodany.")
+
+    def sort_user_movies(self):
+        current = self.sort_combo_user.currentText()
+
+        if current == "Tytuł A-Z":
+            sorted_movies = sorted(self.user.movies, key=lambda m: m.title.lower())
+        elif current == "Tytuł Z-A":
+            sorted_movies = sorted(self.user.movies, key=lambda m: m.title.lower(), reverse=True)
+        elif current == "Rok (rosnąco)":
+            sorted_movies = sorted(self.user.movies, key=lambda m: m.year)
+        elif current == "Rok (malejąco)":
+            sorted_movies = sorted(self.user.movies, key=lambda m: m.year, reverse=True)
+        elif current == "Ocena (rosnąco)":
+            sorted_movies = sorted(self.user.movies, key=lambda m: m.rating)
+        elif current == "Ocena (malejąco)":
+            sorted_movies = sorted(self.user.movies, key=lambda m: m.rating, reverse=True)
+        else:
+            sorted_movies = self.user.movies
+
+        self.movie_list.clear()
+        for movie in sorted_movies:
+            self.movie_list.addItem(f"{movie.title} ({movie.year})")

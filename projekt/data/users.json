@@ -5,22 +5,10 @@
     "password": "admin1",
     "email": "",
     "created_at": "2025-05-25 18:13:15.684876",
-    "last_login": "2025-05-26 20:51:24",
+    "last_login": "2025-05-26 21:35:55",
     "movies": [
       {
-        "id": "58444c21-933d-47dc-a062-555f548a77af",
-        "title": "Ojciec chrzestny",
-        "director": "Francis Ford Coppola",
-        "year": 1972,
-        "genre": "Kryminalny",
-        "status": "Obejrzano",
-        "rating": 9.2,
-        "description": "Starzejący się patriarcha mafijnej rodziny przekazuje władzę niechętnemu synowi.",
-        "watch_date": "2022-12-12",
-        "comments": []
-      },
-      {
-        "id": "31636bd5-95c4-4ea3-8d86-2e471406a797",
+        "id": "ce4eec0e-d643-4e0f-89db-74fddd1e6ade",
         "title": "Matrix",
         "director": "Lana Wachowski, Lilly Wachowski",
         "year": 1999,
@@ -28,6 +16,78 @@
         "status": "Obejrzano",
         "rating": 9.0,
         "description": "Haker odkrywa, że rzeczywistość jest symulacją.",
+        "watch_date": "",
+        "comments": []
+      },
+      {
+        "id": "66498f6d-f620-4cd4-8eb0-d6d6d6316686",
+        "title": "Jurassic Park",
+        "director": "Steven Spielberg",
+        "year": 1993,
+        "genre": "Przygodowy",
+        "status": "Obejrzano",
+        "rating": 8.5,
+        "description": "Dinozaury wymykają się spod kontroli w parku rozrywki.",
+        "watch_date": "",
+        "comments": []
+      },
+      {
+        "id": "96a4455a-905a-4afd-b9fb-eb2f925b9609",
+        "title": "Nowy początek",
+        "director": "Denis Villeneuve",
+        "year": 2016,
+        "genre": "Sci-Fi",
+        "status": "Obejrzano",
+        "rating": 8.0,
+        "description": "Językoznawczyni próbuje porozumieć się z obcymi.",
+        "watch_date": "",
+        "comments": []
+      },
+      {
+        "id": "636ad4bc-3287-4009-92b2-a4bfe536942d",
+        "title": "The Social Network",
+        "director": "David Fincher",
+        "year": 2010,
+        "genre": "Biografia",
+        "status": "Obejrzano",
+        "rating": 7.7,
+        "description": "Historia powstania Facebooka.",
+        "watch_date": "",
+        "comments": []
+      },
+      {
+        "id": "04b563e0-ed26-4408-97bf-ffdd8b20d8fd",
+        "title": "Podziemny krąg",
+        "director": "David Fincher",
+        "year": 1999,
+        "genre": "Dramat",
+        "status": "Obejrzano",
+        "rating": 8.8,
+        "description": "Bezsenność popycha pracownika biura do stworzenia klubu walki.",
+        "watch_date": "",
+        "comments": []
+      },
+      {
+        "id": "6046ea86-1574-4137-999a-a5dcdf6cdbdf",
+        "title": "Ona",
+        "director": "Spike Jonze",
+        "year": 2013,
+        "genre": "Romans",
+        "status": "Jeszcze nieobejrzany",
+        "rating": null,
+        "description": "Mężczyzna zakochuje się w systemie operacyjnym z AI.",
+        "watch_date": "",
+        "comments": []
+      },
+      {
+        "id": "36d959c8-096d-4b3f-b531-3ea39f4c0d8b",
+        "title": "Mad Max: Na drodze gniewu",
+        "director": "George Miller",
+        "year": 2015,
+        "genre": "Akcja",
+        "status": "Obejrzano",
+        "rating": 8.1,
+        "description": "W postapokaliptycznym świecie Max dołącza do rebelii.",
         "watch_date": "",
         "comments": []
       }
@@ -39,7 +99,43 @@
     "password": "admin2",
     "email": "",
     "created_at": "2025-05-25 18:14:05.452687",
-    "last_login": "2025-05-26 13:23:39",
-    "movies": []
+    "last_login": "2025-05-26 20:54:34",
+    "movies": [
+      {
+        "id": "5fcc6019-8f31-494f-abc2-167b77ebd3bb",
+        "title": "Interstellar",
+        "director": "Christopher Nolan",
+        "year": 2014,
+        "genre": "Sci-Fi",
+        "status": "Obejrzano",
+        "rating": 8.6,
+        "description": "Zespół wyrusza przez tunel czasoprzestrzenny w poszukiwaniu nowego domu dla ludzkości.",
+        "watch_date": "",
+        "comments": [
+          {
+            "user": "admin",
+            "comment": "kom",
+            "date": "2025-05-26"
+          },
+          {
+            "user": "admin2",
+            "comment": "kom elo",
+            "date": "2025-05-26"
+          }
+        ]
+      },
+      {
+        "id": "a225c941-c177-4b00-b75a-0a1fcb7329dd",
+        "title": "Skazani na Shawshank",
+        "director": "Frank Darabont",
+        "year": 1994,
+        "genre": "Dramat",
+        "status": "Obejrzano",
+        "rating": 9.3,
+        "description": "Dwóch więźniów zaprzyjaźnia się przez wiele lat.",
+        "watch_date": "",
+        "comments": []
+      }
+    ]
   }
 ]

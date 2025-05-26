@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QFormLayout, QLineEdit, QComboBox,
-    QTextEdit, QPushButton, QMessageBox
+    QTextEdit, QPushButton, QMessageBox, QListWidget  # 🔧 Dodano QListWidget
 )
 from models.movie import Movie
 
@@ -9,6 +9,7 @@ class AddMovieWindow(QDialog):
         super().__init__(parent)
 
         self.movie = None
+        self.comments = []  # 🔧 Przechowywanie komentarzy
 
         self.setWindowTitle("Dodaj nowy film")
 
@@ -34,11 +35,33 @@ class AddMovieWindow(QDialog):
 
         layout.addLayout(form)
 
+        # 🔧 Komentarze
+        self.comment_input = QTextEdit()
+        self.comment_input.setPlaceholderText("Dodaj komentarz...")
+        self.add_comment_button = QPushButton("Dodaj komentarz")
+        self.comment_list = QListWidget()
+
+        self.add_comment_button.clicked.connect(self.add_comment)
+
+        layout.addWidget(self.comment_input)
+        layout.addWidget(self.add_comment_button)
+        layout.addWidget(self.comment_list)
+
+        # 🔧 Przycisk do dodania filmu
         self.add_button = QPushButton("Dodaj film")
         self.add_button.clicked.connect(self.accept_dialog)
         layout.addWidget(self.add_button)
 
         self.setLayout(layout)
+
+    def add_comment(self):  # 🔧 Funkcja do dodawania komentarzy
+        comment = self.comment_input.toPlainText().strip()
+        if comment:
+            self.comments.append(comment)
+            self.comment_list.addItem(comment)
+            self.comment_input.clear()
+        else:
+            QMessageBox.warning(self, "Błąd", "Komentarz nie może być pusty!")
 
     def accept_dialog(self):
         title = self.title_input.text().strip()
@@ -66,3 +89,6 @@ class AddMovieWindow(QDialog):
 
     def get_movie(self):
         return self.movie
+
+    def get_comments(self):  # 🔧 Dostęp do komentarzy
+        return self.comments
