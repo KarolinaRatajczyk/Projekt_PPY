@@ -1,168 +1,72 @@
+from typing import Optional, List
 from matplotlib.figure import Figure
+from collections import Counter
+from matplotlib import pyplot as plt
+
+from models.user import User  # zakładam, że masz klasę User i Movie w osobnych plikach
 from models.movie import Movie
-from models.user import User
-from typing import Optional
 
 class Statistics:
 
     @staticmethod
     def plot_ratings_per_movie(user: User) -> Figure:
-        fig = Figure(figsize=(6, 4))
-        ax = fig.add_subplot(111)
+        watched: List[Movie] = [m for m in user.movies if m.status.lower() == "obejrzano" and m.rating is not None]
+        titles: List[str] = [m.title for m in watched]
+        ratings: List[float] = [float(m.rating) for m in watched]
 
-        movies = []
-        for m in user.movies:
-            if m.status == "Obejrzano" and m.rating is not None:
-                movies.append(m)
-
-        ratings = []
-        labels = []
-        for m in movies:
-            ratings.append(m.rating)
-            labels.append(m.title)
-
-        if ratings:
-            bars = ax.bar(labels, ratings, color='skyblue')
+        fig, ax = plt.subplots()
+        if titles:
+            ax.barh(titles, ratings, color="#4CAF50")
+            ax.set_xlabel("Ocena")
             ax.set_title("Oceny obejrzanych filmów")
-            ax.set_ylabel("Ocena")
-            ax.set_ylim(0, 10)
-            ax.set_xticks(range(len(labels)))
-            ax.set_xticklabels(labels, rotation=45, ha='right')
-
-            for i in range(len(bars)):
-                bar = bars[i]
-                rating = ratings[i]
-                ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.2,
-                        str(round(rating, 1)), ha='center', fontsize=8)
         else:
-            ax.text(0.5, 0.5, "Brak ocenionych filmów", ha='center', va='center')
-
-        fig.tight_layout()
+            ax.text(0.5, 0.5, "Brak ocenionych obejrzanych filmów", ha="center", va="center", transform=ax.transAxes)
+            ax.axis("off")
         return fig
 
     @staticmethod
     def plot_movies_by_genre(user: User) -> Figure:
-        fig = Figure(figsize=(5, 5))
-        ax = fig.add_subplot(111)
+        genres: List[str] = [m.genre for m in user.movies if m.genre]
+        count: Counter = Counter(genres)
 
-        genres = {}
-        for movie in user.movies:
-            genre = movie.genre.strip().capitalize()
-            if genre != "":
-                if genre in genres:
-                    genres[genre] += 1
-                else:
-                    genres[genre] = 1
-
-        if len(genres) > 0:
-            labels = []
-            sizes = []
-            for key in genres:
-                labels.append(key)
-                sizes.append(genres[key])
-
-            ax.pie(
-                sizes,
-                labels=labels,
-                autopct="%1.1f%%",
-                startangle=90,
-                wedgeprops={'edgecolor': 'white'},
-                textprops={'fontsize': 9}
-            )
-            ax.set_title("Rozkład filmów według gatunku")
-            ax.axis("equal")
+        fig, ax = plt.subplots()
+        if count:
+            ax.pie(count.values(), labels=count.keys(), autopct="%1.1f%%", startangle=140)
+            ax.set_title("Filmy wg gatunku")
         else:
-            ax.text(0.5, 0.5, "Brak danych o gatunkach", ha='center', va='center')
-
-        fig.tight_layout()
+            ax.text(0.5, 0.5, "Brak danych o gatunkach", ha="center", va="center", transform=ax.transAxes)
+            ax.axis("off")
         return fig
 
     @staticmethod
-    def plot_average_rating(user: User) -> Figure:
-        fig = Figure(figsize=(4, 3))
-        ax = fig.add_subplot(111)
+    def plot_watched_vs_unwatched(user: User) -> Figure:
+        watched: int = sum(1 for m in user.movies if m.status.lower() == "obejrzano")
+        unwatched: int = sum(1 for m in user.movies if m.status.lower() != "obejrzano")
 
-        ratings = []
-        for m in user.movies:
-            if m.rating is not None:
-                ratings.append(m.rating)
-
-        if len(ratings) > 0:
-            suma = 0
-            for r in ratings:
-                suma += r
-            avg = suma / len(ratings)
-
-            bar = ax.bar(["Średnia"], [avg], color='green')
-            ax.set_title("Średnia ocena filmów")
-            ax.set_ylim(0, 10)
-            ax.set_ylabel("Ocena")
-
-            ax.bar_label(bar, fmt="%.2f", padding=5, fontsize=10)
-        else:
-            ax.text(0.5, 0.5, "Brak ocenionych filmów", ha='center', va='center')
-
-        fig.tight_layout()
+        fig, ax = plt.subplots()
+        ax.bar(["Obejrzane", "Do obejrzenia"], [watched, unwatched], color=["#2196F3", "#FFC107"])
+        ax.set_title("Status filmów")
+        ax.set_ylabel("Liczba filmów")
         return fig
 
     @staticmethod
-    def plot_top_rated_movie(user: User) -> Figure:
-        fig = Figure(figsize=(5, 3))
-        ax = fig.add_subplot(111)
+    def plot_top_rated_text(user: User) -> Figure:
+        top_movie: Optional[Movie] = Statistics.get_top_rated_movie(user)
+        fig, ax = plt.subplots()
 
-        rated_movies = []
-        for m in user.movies:
-            if m.rating is not None:
-                rated_movies.append(m)
-
-        if len(rated_movies) > 0:
-            top_movie = rated_movies[0]
-            for m in rated_movies:
-                if m.rating > top_movie.rating:
-                    top_movie = m
-
-            bar = ax.bar([top_movie.title], [top_movie.rating], color='purple')
-            ax.set_ylim(0, 10)
-            ax.set_title("Najlepiej oceniany film")
-            ax.set_ylabel("Ocena")
-
-            ax.set_xticks([0])
-            ax.set_xticklabels([top_movie.title], rotation=15, ha='center', fontsize=9)
-
-            ax.bar_label(bar, fmt="%.1f", padding=5, fontsize=10)
+        if top_movie:
+            msg: str = f"Najlepszy film:\n{top_movie.title} ({top_movie.year})\nOcena: {top_movie.rating}/10"
         else:
-            ax.text(0.5, 0.5, "Brak ocenionych filmów", ha='center', va='center')
+            msg = "Brak filmów z oceną"
 
-        fig.tight_layout()
+        ax.text(0.5, 0.5, msg, ha="center", va="center", fontsize=14, transform=ax.transAxes)
+        ax.axis("off")
         return fig
-
-    @staticmethod
-    def get_average_rating(user: User) -> Optional[float]:
-        ratings = []
-        for m in user.movies:
-            if m.rating is not None:
-                ratings.append(m.rating)
-
-        if len(ratings) > 0:
-            suma = 0
-            for r in ratings:
-                suma += r
-            return suma / len(ratings)
-        return None
 
     @staticmethod
     def get_top_rated_movie(user: User) -> Optional[Movie]:
-        rated_movies = []
-        for m in user.movies:
-            if m.rating is not None:
-                rated_movies.append(m)
-
-        if len(rated_movies) == 0:
+        rated: List[Movie] = [m for m in user.movies if m.rating is not None]
+        if not rated:
             return None
+        return max(rated, key=lambda m: float(m.rating))
 
-        top_movie = rated_movies[0]
-        for m in rated_movies:
-            if m.rating > top_movie.rating:
-                top_movie = m
-
-        return top_movie

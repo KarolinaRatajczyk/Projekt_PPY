@@ -2,6 +2,9 @@ import uuid
 from datetime import date
 from typing import List, Dict, Any, Optional, Union
 
+from exceptions.exceptions import InvalidRatingError
+
+
 class Movie:
     def __init__(
         self,
@@ -23,7 +26,7 @@ class Movie:
             try:
                 rating = float(rating)
                 if rating < 0 or rating > 10:
-                    raise ValueError("Ocena musi być w zakresie 0-10")
+                    raise InvalidRatingError("Ocena musi być w zakresie 0-10")
             except ValueError:
                 raise ValueError("Ocena musi być liczbą")
 

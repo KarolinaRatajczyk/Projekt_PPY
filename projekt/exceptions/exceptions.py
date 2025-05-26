@@ -22,11 +22,18 @@ class UserError(Exception):
     "when user error"
     pass
 
-
 class UserAlreadyExists(Exception):
     "User already exists"
     pass
 
 class IncorrectPassword(Exception):
     "Incorrect password"
+    pass
+
+class InvalidRatingError(Exception):
+    "Rating must be a number between 0 and 10"
+    pass
+
+class MovieNotSelectedError(Exception):
+    "No movie selected"
     pass

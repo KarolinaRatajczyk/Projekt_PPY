@@ -8,9 +8,10 @@ from PySide6.QtWidgets import (
 )
 
 from pathlib import Path
+
+from exceptions.exceptions import MovieNotSelectedError
 from utils.file_operations import FileOperations
 from managers.movieManager import MovieManager
-from models.movie import Movie
 from utils.statistics import Statistics
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
@@ -30,7 +31,6 @@ class MainAppWindow(QWidget):
         self.setLayout(layout)
 
         self.filtered_movies = self.user.movies.copy()
-
 
         # --- TAB 1: Lista filmów użytkownika
         self.user_tab = QWidget()
@@ -235,7 +235,10 @@ class MainAppWindow(QWidget):
 
     def open_edit_movie_dialog(self):
         index = self.movie_list.currentRow()
-        if index == -1:
+        try:
+            if index == -1:
+                raise MovieNotSelectedError()
+        except MovieNotSelectedError:
             QMessageBox.warning(self, "Błąd", "Wybierz film do edycji.")
             return
 
@@ -246,14 +249,12 @@ class MainAppWindow(QWidget):
         if dialog.exec():
             updated_movie = dialog.get_updated_movie()
 
-            # Znajdź prawdziwy indeks w self.user.movies
             original_index = self.user.movies.index(movie)
             self.user.movies[original_index] = updated_movie
 
             self.user_manager.save_users()
             self.load_user_movies()
             self.update_stats()
-
 
     def init_sample_tab(self):
         main_layout = QVBoxLayout()
@@ -391,31 +392,33 @@ class MainAppWindow(QWidget):
         self.stats_tab.setLayout(self.stats_tab_layout)
         self.stats_tab_layout.addWidget(self.stats_tabs)
 
+        # Oceny obejrzanych
         self.ratings_widget = QWidget()
         self.ratings_layout = QVBoxLayout(self.ratings_widget)
         self.canvas_ratings = FigureCanvas(Statistics.plot_ratings_per_movie(self.user))
         self.ratings_layout.addWidget(self.canvas_ratings)
-        self.stats_tabs.addTab(self.ratings_widget, "Oceny filmów")
+        self.stats_tabs.addTab(self.ratings_widget, "Oceny obejrzanych")
 
+        # Gatunki
         self.genre_widget = QWidget()
         self.genre_layout = QVBoxLayout(self.genre_widget)
         self.canvas_genre = FigureCanvas(Statistics.plot_movies_by_genre(self.user))
         self.genre_layout.addWidget(self.canvas_genre)
         self.stats_tabs.addTab(self.genre_widget, "Gatunki")
 
-        self.avg_widget = QWidget()
-        self.avg_layout = QVBoxLayout(self.avg_widget)
-        self.canvas_avg = FigureCanvas(Statistics.plot_average_rating(self.user))
-        self.avg_layout.addWidget(self.canvas_avg)
-        self.stats_tabs.addTab(self.avg_widget, "Średnia")
+        # Nowy: Status obejrzenia
+        self.status_widget = QWidget()
+        self.status_layout = QVBoxLayout(self.status_widget)
+        self.canvas_status = FigureCanvas(Statistics.plot_watched_vs_unwatched(self.user))
+        self.status_layout.addWidget(self.canvas_status)
+        self.stats_tabs.addTab(self.status_widget, "Obejrzane vs. nie")
 
+        # Tekst: Najlepszy film
         self.best_widget = QWidget()
         self.best_layout = QVBoxLayout(self.best_widget)
-        self.canvas_best = FigureCanvas(Statistics.plot_top_rated_movie(self.user))
+        self.canvas_best = FigureCanvas(Statistics.plot_top_rated_text(self.user))
         self.best_layout.addWidget(self.canvas_best)
         self.stats_tabs.addTab(self.best_widget, "Najlepszy film")
-
-
 
     def update_stats(self):
         self.canvas_ratings.figure = Statistics.plot_ratings_per_movie(self.user)
@@ -424,25 +427,18 @@ class MainAppWindow(QWidget):
         self.canvas_genre.figure = Statistics.plot_movies_by_genre(self.user)
         self.canvas_genre.draw()
 
-        self.canvas_avg.figure = Statistics.plot_average_rating(self.user)
-        self.canvas_avg.draw()
+        self.canvas_status.figure = Statistics.plot_watched_vs_unwatched(self.user)
+        self.canvas_status.draw()
 
-        self.canvas_best.figure = Statistics.plot_top_rated_movie(self.user)
+        self.canvas_best.figure = Statistics.plot_top_rated_text(self.user)
         self.canvas_best.draw()
-
-
-        avg = Statistics.get_average_rating(self.user)
-        top = Statistics.get_top_rated_movie(self.user)
-
-        if avg is not None and top is not None:
-            summary = f"Średnia ocena: {avg:.2f}   |   Najlepszy film: {top.title} ({top.rating}/10)"
-        else:
-            summary = "Brak wystarczających danych do podsumowania"
-
 
     def delete_selected_movie(self):
         index = self.movie_list.currentRow()
-        if index == -1:
+        try:
+            if index == -1:
+                raise MovieNotSelectedError()
+        except MovieNotSelectedError:
             QMessageBox.warning(self, "Błąd", "Nie wybrano żadnego filmu do usunięcia.")
             return
 
@@ -513,7 +509,11 @@ class MainAppWindow(QWidget):
 
     def toggle_movie_status(self, link: str) -> None:
         index = self.movie_list.currentRow()
-        if index == -1:
+        try:
+            if index == -1:
+                raise MovieNotSelectedError()
+        except MovieNotSelectedError:
+            QMessageBox.warning(self, "Błąd", "Najpierw wybierz film z listy.")
             return
 
         movie = self.user.movies[index]
