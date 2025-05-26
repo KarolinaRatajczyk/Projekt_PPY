@@ -31,6 +31,7 @@ class MainAppWindow(QWidget):
 
         self.filtered_movies = self.user.movies.copy()
 
+
         # --- TAB 1: Lista filmów użytkownika
         self.user_tab = QWidget()
         self.init_user_tab()
@@ -368,8 +369,8 @@ class MainAppWindow(QWidget):
             director=movie_data["director"],
             year=movie_data["year"],
             genre=movie_data["genre"],
-            status=movie_data["status"],
-            rating=movie_data["rating"],
+            status="Do obejrzenia",
+            rating=None,
             description=movie_data["description"],
             watch_date=movie_data.get("watch_date")
         )
@@ -516,9 +517,8 @@ class MainAppWindow(QWidget):
             return
 
         movie = self.user.movies[index]
-        status = movie.status.strip().lower()
 
-        if status == "Do obejrzenia":
+        if movie.status == "Do obejrzenia":
             movie.status = "Obejrzano"
             movie.watch_date = date.today().isoformat()
         else:
