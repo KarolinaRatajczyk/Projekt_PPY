@@ -51,3 +51,20 @@ class FileOperations:
 
         except Exception as e:
             raise WrongFileLoading(f"Błąd podczas eksportu do CSV: {e}")
+
+    @staticmethod
+    def export_to_txt(movies: List[Movie], filename: str) -> None:
+        try:
+            with open(filename, 'w', encoding='utf-8') as f:
+                for movie in movies:
+                    f.write(f"Tytuł: {movie.title}\n")
+                    f.write(f"Reżyser: {movie.director}\n")
+                    f.write(f"Rok: {movie.year}\n")
+                    f.write(f"Gatunek: {movie.genre}\n")
+                    f.write(f"Status: {movie.status}\n")
+                    f.write(f"Ocena: {movie.rating}\n")
+                    f.write(f"Opis: {movie.description}\n")
+                    f.write(f"Data obejrzenia: {movie.watch_date}\n")
+                    f.write("-" * 40 + "\n")
+        except Exception as e:
+            raise WrongFileLoading(f"Błąd podczas eksportu do TXT: {e}")

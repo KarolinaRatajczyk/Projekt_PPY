@@ -3,12 +3,12 @@ from datetime import date
 
 from PySide6.QtWidgets import (
     QWidget, QListWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QPushButton, QLineEdit, QTextEdit, QFormLayout, QMessageBox,
+    QPushButton, QLineEdit, QTextEdit, QMessageBox,
     QComboBox, QTabWidget, QScrollArea, QGroupBox
 )
 
 from pathlib import Path
-
+from utils.file_operations import FileOperations
 from managers.movieManager import MovieManager
 from models.movie import Movie
 from utils.statistics import Statistics
@@ -100,6 +100,8 @@ class MainAppWindow(QWidget):
 
         self.details_label = QLabel("Wybierz film z listy")
         self.details_label.setWordWrap(True)
+        self.details_label.setOpenExternalLinks(False)
+        self.details_label.linkActivated.connect(self.toggle_movie_status)
 
         details_layout = QVBoxLayout()
         details_layout.addWidget(self.details_label)
@@ -141,6 +143,21 @@ class MainAppWindow(QWidget):
             }""")
         right_layout.addWidget(self.edit_film_button)
 
+        self.export_txt_button = QPushButton("📄 Eksportuj do TXT")
+        self.export_txt_button.clicked.connect(self.export_movies_to_txt)
+        self.export_txt_button.setStyleSheet("""
+                    QPushButton {
+                        background-color: #AB47BC;
+                        color: white;
+                        font-weight: bold;
+                        border: none;
+                        padding: 10px;
+                        border-radius: 5px;
+                        }
+                        QPushButton:hover {
+                        background-color: #9C27B0;
+                    }""")
+        right_layout.addWidget(self.export_txt_button)
 
         self.delete_film_button = QPushButton("🗑️ Usuń film")
         self.delete_film_button.clicked.connect(self.delete_selected_movie)
@@ -171,22 +188,30 @@ class MainAppWindow(QWidget):
         self.filtered_movies = self.user.movies.copy()
         self.update_movie_list_widget()
 
+    def export_movies_to_txt(self) -> None:
+        try:
+            filename = f"moje_filmy_{self.user.username}.txt"
+            FileOperations.export_to_txt(self.user.movies, filename)
+            QMessageBox.information(self, "Sukces", f"Filmy wyeksportowano do pliku: {filename}")
+        except Exception as e:
+            QMessageBox.critical(self, "Błąd", f"Nie udało się wyeksportować: {str(e)}")
+
     def show_movie_details(self, item):
         index = self.movie_list.row(item)
         if index < 0 or index >= len(self.filtered_movies):
             return
         movie = self.filtered_movies[index]
 
-        # ✅ Zmieniono: movie['status'] → movie.status
         if movie.status.lower() == "watched":
-            pass  # jeśli chcesz coś dodać, możesz tutaj
+            pass
 
         text = (
             f"<h3 style='margin-bottom: 10px;'>{movie.title} ({movie.year})</h3>"
             f"<div style='font-size: 13px;'>"
             f"<b>Reżyser:</b> {movie.director}<br>"
             f"<b>Gatunek:</b> {movie.genre}<br>"
-            f"<b>Status:</b> {movie.status}<br>"
+            # f"<b>Status:</b> {movie.status}<br>"
+            f"<b>Status:</b> {movie.status} <a href='#toggle' style='color:#1976D2;'>[zmień]</a><br>"
             f"<b>Ocena:</b> {movie.rating}<br>"
             f"<b>Opis:</b> {movie.description}<br>"
             f"<b>Data obejrzenia:</b> {getattr(movie, 'watch_date', 'Brak')}"
@@ -228,6 +253,7 @@ class MainAppWindow(QWidget):
             self.load_user_movies()
             self.update_stats()
 
+
     def init_sample_tab(self):
         main_layout = QVBoxLayout()
         self.sample_tab.setLayout(main_layout)
@@ -255,7 +281,6 @@ class MainAppWindow(QWidget):
         self.add_comment_button.clicked.connect(self.add_sample_comment)
         right_panel.addWidget(self.add_comment_button)
 
-        # self.sample_comment_edit.setPlaceholderText("Dodaj komentarz (opcjonalnie)")
         right_panel.addWidget(self.sample_comment_edit)
 
 
@@ -324,7 +349,6 @@ class MainAppWindow(QWidget):
             return
 
 
-        # Dodaj komentarz użytkownika do JSON-a
         comment_text = self.sample_comment_edit.toPlainText().strip()
         if comment_text:
             comment_entry = {
@@ -334,11 +358,9 @@ class MainAppWindow(QWidget):
             }
             movie_data.setdefault("comments", []).append(comment_entry)
 
-            # Zapisz komentarz do pliku JSON
             with self.sample_file.open("w", encoding="utf-8") as f:
                 json.dump(self.sample_movies, f, indent=2, ensure_ascii=False)
 
-        # Dodaj film do listy użytkownika
         from models.movie import Movie
 
         movie = Movie(
@@ -416,6 +438,7 @@ class MainAppWindow(QWidget):
         else:
             summary = "Brak wystarczających danych do podsumowania"
 
+
     def delete_selected_movie(self):
         index = self.movie_list.currentRow()
         if index == -1:
@@ -430,8 +453,8 @@ class MainAppWindow(QWidget):
         )
 
         if confirm == QMessageBox.StandardButton.Yes:
-            movie = self.filtered_movies[index]
-            self.user.movies.remove(movie)
+            movie = self.user.movies[index]
+            del self.user.movies[index]
             self.user_manager.save_users()
             self.load_user_movies()
             self.details_label.setText("Wybierz film z listy")
@@ -457,11 +480,9 @@ class MainAppWindow(QWidget):
 
         movie_data.setdefault("comments", []).append(comment_entry)
 
-        # Zapisz do pliku
         with self.sample_file.open("w", encoding="utf-8") as f:
             json.dump(self.sample_movies, f, indent=2, ensure_ascii=False)
 
-        # Wyczyszczenie pola i odświeżenie widoku
         self.sample_comment_edit.clear()
         self.show_sample_movie_details(self.sample_list.item(index))
         QMessageBox.information(self, "Sukces", "Komentarz został dodany.")
@@ -488,3 +509,25 @@ class MainAppWindow(QWidget):
         self.movie_list.clear()
         for movie in self.filtered_movies:
             self.movie_list.addItem(f"{movie.title} ({movie.year})")
+
+    def toggle_movie_status(self, link: str) -> None:
+        index = self.movie_list.currentRow()
+        if index == -1:
+            return
+
+        movie = self.user.movies[index]
+        status = movie.status.strip().lower()
+
+        if status == "Do obejrzenia":
+            movie.status = "Obejrzano"
+            movie.watch_date = date.today().isoformat()
+        else:
+            movie.status = "Do obejrzenia"
+            movie.watch_date = ""
+
+        self.user_manager.save_users()
+        self.load_user_movies()
+        self.show_movie_details(self.movie_list.item(index))
+        self.update_stats()
+
+
