@@ -32,22 +32,23 @@ class MainAppWindow(QWidget):
 
         self.filtered_movies = self.user.movies.copy()
 
-        # --- TAB 1: Lista filmów użytkownika
         self.user_tab = QWidget()
         self.init_user_tab()
         self.tabs.addTab(self.user_tab, "Moje filmy")
 
-        # --- TAB 2: Dodaj z listy dostępnych
+        self.history_tab = QWidget()
+        self.init_history_tab()
+        self.tabs.addTab(self.history_tab, "Historia")
+
         self.sample_tab = QWidget()
         self.init_sample_tab()
         self.tabs.addTab(self.sample_tab, "Dodaj z bazy filmów")
 
-        # --- TAB 3: Statystyki
         self.stats_tab = QWidget()
         self.init_stats_tab()
         self.tabs.addTab(self.stats_tab, "Statystyki")
 
-    # === Moje filmy ===
+
     def init_user_tab(self):
         main_layout = QHBoxLayout()
         self.user_tab.setLayout(main_layout)
@@ -60,7 +61,6 @@ class MainAppWindow(QWidget):
         left_column.addWidget(self.search_input_user)
 
 
-        # ZMIENIONE SORTOWANIE
         self.sort_combo_user = QComboBox()
         self.sort_combo_user.addItems(
             ["Sortuj wg: Tytuł A-Z", "Tytuł Z-A", "Rok (rosnąco)", "Rok (malejąco)", "Ocena (rosnąco)",
@@ -179,6 +179,43 @@ class MainAppWindow(QWidget):
 
         main_layout.addLayout(right_layout, 2)
         self.load_user_movies()
+
+    def init_history_tab(self) -> None:
+        layout = QVBoxLayout()
+        self.history_tab.setLayout(layout)
+
+        title = QLabel("Lista obejrzanych filmów:")
+        title.setStyleSheet("""
+            QLabel {
+                font-size: 16px;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+        """)
+        layout.addWidget(title)
+
+        self.history_list = QListWidget()
+        self.history_list.setStyleSheet("""
+            QListWidget {
+                background-color: #2c2c2c;
+                font-size: 14px;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+            QListWidget::item {
+                padding: 5px;
+            }
+        """)
+        layout.addWidget(self.history_list)
+
+        self.load_history()
+
+    def load_history(self) -> None:
+        self.history_list.clear()
+        for movie in self.user.movies:
+            if movie.status == "Obejrzano" and movie.watch_date:
+                self.history_list.addItem(f"{movie.title} – {movie.watch_date}")
 
     def search_user_movies(self, text):
         text = text.strip().lower()
@@ -432,6 +469,8 @@ class MainAppWindow(QWidget):
 
         self.canvas_best.figure = Statistics.plot_top_rated_text(self.user)
         self.canvas_best.draw()
+
+        self.load_history()
 
     def delete_selected_movie(self):
         index = self.movie_list.currentRow()

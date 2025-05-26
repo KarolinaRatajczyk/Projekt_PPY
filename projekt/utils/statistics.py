@@ -22,6 +22,8 @@ class Statistics:
         else:
             ax.text(0.5, 0.5, "Brak ocenionych obejrzanych filmów", ha="center", va="center", transform=ax.transAxes)
             ax.axis("off")
+
+        plt.close(fig)
         return fig
 
     @staticmethod

@@ -1,0 +1,72 @@
+Tytuł: Jurassic Park
+Reżyser: Steven Spielberg
+Rok: 1993
+Gatunek: Przygodowy
+Status: Obejrzano
+Ocena: 8.5
+Opis: Dinozaury wymykają się spod kontroli w parku rozrywki.
+Data obejrzenia: 2025-05-26
+----------------------------------------
+Tytuł: Matrix
+Reżyser: Lana Wachowski, Lilly Wachowski
+Rok: 1999
+Gatunek: Sci-Fi
+Status: Obejrzano
+Ocena: 9.0
+Opis: Haker odkrywa, że rzeczywistość jest symulacją.
+Data obejrzenia: 2025-05-26
+----------------------------------------
+Tytuł: Szybcy i wściekli
+Reżyser: Rob Cohen
+Rok: 2001
+Gatunek: Akcja
+Status: Do obejrzenia
+Ocena: 7.0
+Opis: Policjant infiltruje gang nielegalnych wyścigów ulicznych.
+Data obejrzenia: 
+----------------------------------------
+Tytuł: Szybcy i wściekli 5
+Reżyser: Justin Lin
+Rok: 2011
+Gatunek: Akcja
+Status: Do obejrzenia
+Ocena: 7.3
+Opis: Ekipa planuje wielki skok w Rio de Janeiro.
+Data obejrzenia: 
+----------------------------------------
+Tytuł: Parasite
+Reżyser: Bong Joon-ho
+Rok: 2019
+Gatunek: Thriller
+Status: Obejrzano
+Ocena: None
+Opis: Biedna rodzina planuje wniknięcie do bogatego domu.
+Data obejrzenia: 2025-05-26
+----------------------------------------
+Tytuł: Mad Max: Na drodze gniewu
+Reżyser: George Miller
+Rok: 2015
+Gatunek: Akcja
+Status: Obejrzano
+Ocena: None
+Opis: W postapokaliptycznym świecie Max dołącza do rebelii.
+Data obejrzenia: 2025-05-26
+----------------------------------------
+Tytuł: Lśnienie
+Reżyser: Stanley Kubrick
+Rok: 1980
+Gatunek: Horror
+Status: Do obejrzenia
+Ocena: None
+Opis: Pisarz popada w obłęd w odizolowanym hotelu.
+Data obejrzenia: 
+----------------------------------------
+Tytuł: Szybcy i wściekli 7
+Reżyser: James Wan
+Rok: 2015
+Gatunek: Akcja
+Status: Obejrzano
+Ocena: None
+Opis: Ekipa ściga się z czasem, by pokonać morderczego przeciwnika.
+Data obejrzenia: 2025-05-26
+----------------------------------------
