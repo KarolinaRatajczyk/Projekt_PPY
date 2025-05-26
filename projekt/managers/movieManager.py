@@ -1,7 +1,6 @@
 import json
 
-from projekt.exceptions.exceptions import WrongStatus, NotSuchAnId, EmptyMovieListError, DuplicateMovieError
-from projekt.models.movie import Movie
+from exceptions.exceptions import DuplicateMovieError, EmptyMovieListError, NotSuchAnId, WrongStatus
 
 
 class MovieManager:

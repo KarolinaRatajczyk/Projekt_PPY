@@ -7,8 +7,10 @@ from PySide6.QtWidgets import (
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
-from projekt.models.movie import Movie
-from projekt.managers.movieManager import MovieManager
+from pathlib import Path
+
+from managers.movieManager import MovieManager
+from models.movie import Movie
 
 
 class MainAppWindow(QWidget):
@@ -152,7 +154,10 @@ class MainAppWindow(QWidget):
         self.add_sample_button.clicked.connect(self.add_selected_sample)
         layout.addWidget(self.add_sample_button)
 
-        with open("C:/Users/gorka/PycharmProjects/Projekt_PPY/projekt/data/sample_movies.json", "r", encoding="utf-8") as f:
+        base_dir = Path(__file__).resolve().parent.parent
+        json_file = base_dir / "data" / "sample_movies.json"
+
+        with json_file.open("r", encoding="utf-8") as f:
             self.sample_movies = json.load(f)
 
         for m in self.sample_movies:

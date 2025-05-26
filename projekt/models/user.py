@@ -1,8 +1,7 @@
 import uuid
 from datetime import datetime
 
-from projekt.models.movie import Movie
-
+from models.movie import Movie
 
 class User:
     def __init__(self, username, password, email=""):

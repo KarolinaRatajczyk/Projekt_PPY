@@ -1,7 +1,7 @@
 import json
 import csv
 
-from projekt.exceptions.exceptions import WrongFileLoading
+from exceptions.exceptions import WrongFileLoading
 
 
 class FileOperations:

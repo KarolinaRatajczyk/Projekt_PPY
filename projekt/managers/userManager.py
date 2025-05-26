@@ -3,8 +3,8 @@ import json
 import os
 from datetime import datetime
 
-from projekt.exceptions.exceptions import UserError, WrongStatus
-from projekt.models.user import User
+from exceptions.exceptions import UserError, WrongStatus
+from models.user import User
 
 
 class UserManager:
