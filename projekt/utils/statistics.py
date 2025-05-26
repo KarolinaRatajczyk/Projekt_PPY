@@ -53,16 +53,23 @@ class Statistics:
 
     @staticmethod
     def plot_top_rated_text(user: User) -> Figure:
-        top_movie: Optional[Movie] = Statistics.get_top_rated_movie(user)
-        fig, ax = plt.subplots()
+        rated: List[Movie] = [m for m in user.movies if m.rating is not None]
+        fig, ax = plt.subplots(figsize=(6, 3))
 
-        if top_movie:
-            msg: str = f"Najlepszy film:\n{top_movie.title} ({top_movie.year})\nOcena: {top_movie.rating}/10"
+        if rated:
+            top_movies = sorted(rated, key=lambda m: float(m.rating), reverse=True)[:3]
+            lines = [
+                f"{i + 1}. {m.title} ({m.year}) – {m.rating}/10"
+                for i, m in enumerate(top_movies)
+            ]
+            msg = "Top 3 filmy:\n" + "\n".join(lines)
         else:
             msg = "Brak filmów z oceną"
 
-        ax.text(0.5, 0.5, msg, ha="center", va="center", fontsize=14, transform=ax.transAxes)
+        ax.text(0.5, 0.5, msg, ha="center", va="center", fontsize=12, wrap=True, transform=ax.transAxes)
         ax.axis("off")
+        plt.tight_layout()
+        plt.close(fig)
         return fig
 
     @staticmethod
@@ -71,4 +78,21 @@ class Statistics:
         if not rated:
             return None
         return max(rated, key=lambda m: float(m.rating))
+
+    @staticmethod
+    def get_top_rated_movies_summary(user: User, top_n: int = 3) -> str:
+        rated: List[Movie] = [m for m in user.movies if m.rating is not None]
+        if not rated:
+            return "Brak ocenionych filmów"
+
+        top_movies = sorted(rated, key=lambda m: float(m.rating), reverse=True)[:top_n]
+
+        lines = [f"{i + 1}. {m.title} ({m.year}) – {m.rating}/10" for i, m in enumerate(top_movies)]
+        summary = "Top najwyżej oceniane filmy:\n" + "\n".join(lines)
+        return summary
+
+
+
+
+
 

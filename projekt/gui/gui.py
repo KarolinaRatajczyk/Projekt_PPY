@@ -455,7 +455,7 @@ class MainAppWindow(QWidget):
         self.best_layout = QVBoxLayout(self.best_widget)
         self.canvas_best = FigureCanvas(Statistics.plot_top_rated_text(self.user))
         self.best_layout.addWidget(self.canvas_best)
-        self.stats_tabs.addTab(self.best_widget, "Najlepszy film")
+        self.stats_tabs.addTab(self.best_widget, "Top 3 filmy")
 
     def update_stats(self):
         self.canvas_ratings.figure = Statistics.plot_ratings_per_movie(self.user)
